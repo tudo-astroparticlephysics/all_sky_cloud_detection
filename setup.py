@@ -10,6 +10,7 @@ setup(
     install_requires=[
         'scikit-image',
         'astropy>=2',
-
-    ]
+    ],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 )
