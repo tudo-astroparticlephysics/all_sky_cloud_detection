@@ -4,7 +4,7 @@ from all_sky_cloud_detection.preparation import normalize_image
 from all_sky_cloud_detection.star_detection import find_stars
 
 
-def find_blobs(img_name, file_type, threshold, overlap):
+def find_blobs(img_name, file_type, threshold):
     """This function searches for bright blobs above the threshold in an image.
 
     Parameters
@@ -31,10 +31,8 @@ def find_blobs(img_name, file_type, threshold, overlap):
     if file_type == 'fits':
         scale = 2**16
         image = normalize_image(read_fits(img_name), scale=scale)
-        row, col, size = find_stars(image, threshold=threshold, overlap=overlap)
+        row, col, size = find_stars(image, threshold=threshold)
         return row, col, size
-
-    #improve else case when more file types are supported
     else:
         scale = 2**16
         image = normalize_image(read_fits(img_name), scale=scale)
