@@ -3,14 +3,50 @@ from astropy.coordinates import SkyCoord, AltAz, Angle
 import numpy as np
 import pandas as pd
 from all_sky_cloud_detection.coordinate_transformation import spherical2pixel
+from astropy.table import Table
 
 
-def get_catalog(name, mag):
-    """This function queries star catalogs from the  VizieR web service.
+def get_catalog(name, path):
+    """This function queries star catalogs from the  VizieR web service
     Parameters
     -----------
     name: string
             Name of the catalog
+    Returns
+    -------
+    catalog: pandas DataFrame
+            Selected catalog
+    """
+    Custom_Vizier = Vizier(columns=['**'])
+    Custom_Vizier.ROW_LIMIT = -1
+    catalog = Custom_Vizier.get_catalogs(name)[0]
+    catalog = catalog.to_pandas()
+    catalog.to_csv(path)
+    return catalog
+
+
+def read_catalog(path):
+    """This function reads in star catalogs saved as csv file.
+    Parameters
+    -----------
+    path: string
+            Path of the catalog
+    Returns
+    -------
+    catalog: astropy table object
+            star catalog
+    """
+    catalog = pd.read_csv(path)
+    catalog = Table.from_pandas(catalog)
+    return catalog
+
+
+def select_from_catalog(catalog, mag):
+    """This function selects stars from catalog.
+    Parameters
+    -----------
+    catalog: astropy table object
+            Star catalog
     mag: float
         Function selects stars from catalog below given threshold
     Returns
@@ -20,13 +56,9 @@ def get_catalog(name, mag):
     dec_catalog: array
                 right ascension of the selected catalog stars
     """
-    #Spalten spezifizieren → nur sinnvolle Spalten mitnehmen
-    Custom_Vizier = Vizier(columns=['**'])
-    Custom_Vizier.ROW_LIMIT = -1
-    dat_original = Custom_Vizier.get_catalogs(name)[0]
-    dat = dat_original[(dat_original['Vmag'] < mag)]
-    ra_catalog = np.array(pd.DataFrame(dat['RA_ICRS_']).dropna())
-    dec_catalog = np.array(pd.DataFrame(dat['DE_ICRS_']).dropna())
+    reduced_catalog = catalog[(catalog['Vmag'] < mag)]
+    ra_catalog = np.array(pd.DataFrame(reduced_catalog['RA_ICRS_']).dropna())
+    dec_catalog = np.array(pd.DataFrame(reduced_catalog['DE_ICRS_']).dropna())
     return ra_catalog, dec_catalog
 
 
