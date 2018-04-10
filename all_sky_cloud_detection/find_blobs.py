@@ -1,5 +1,5 @@
 # coding: utf-8
-from all_sky_cloud_detection.io import read_fits
+from all_sky_cloud_detection.io import read_fits, read_matlab
 from all_sky_cloud_detection.preparation import normalize_image
 from all_sky_cloud_detection.star_detection import find_stars
 
@@ -33,7 +33,11 @@ def find_blobs(img_name, file_type, threshold, overlap):
         image = normalize_image(read_fits(img_name), scale=scale)
         row, col, size = find_stars(image, threshold=threshold, overlap=overlap)
         return row, col, size
-
+    if file_type == 'mat':
+        scale = 2**16
+        image = normalize_image(read_matlab(img_name), scale=scale)
+        row, col, size = find_stars(image, threshold=threshold, overlap=overlap)
+        return row, col, size
     #improve else case when more file types are supported
     else:
         scale = 2**16

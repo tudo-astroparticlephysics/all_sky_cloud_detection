@@ -9,6 +9,6 @@ def read_fits(path):
 
 
 def read_matlab(path):
-	image = sio.loadmat(path)
-	image = image['pic1']
-	return image
+    image = sio.loadmat(path)
+    image = image['pic1']
+    return image
