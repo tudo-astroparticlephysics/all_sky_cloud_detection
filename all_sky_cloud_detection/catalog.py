@@ -84,7 +84,7 @@ def transform_catalog(ra_catalog, dec_catalog, time, cam):
     return pos_altaz
 
 
-def match_catalogs(catalog, c, cam):
+def match_catalogs(catalog, image_stars, cam):
     """This function compares star positions.
     Parameters
     -----------
@@ -101,13 +101,18 @@ def match_catalogs(catalog, c, cam):
     catalog: array
         Pixel positions of the matching stars.
     """
-    idxc, idxcatalog, d2d_c, d3d_c = catalog.search_around_sky(c, Angle('1d'))
-    matches_catalog = catalog[idxcatalog]
-    matches_c = c[idxc]
-    catalog_row, catalog_col = spherical2pixel(matches_catalog.alt, matches_catalog.az, cam.lens.theta2r, cam)
-    c_row, c_col = spherical2pixel(matches_c.alt, matches_c.az, cam.lens.theta2r, cam)
-    catalog_size = np.ones(len(catalog_row))
-    c_size = np.ones(len(c_row))
-    c = np.array([c_row[0], c_col[0], c_size])
-    catalog = np.array([catalog_row[0], catalog_col[0], catalog_size])
-    return c, catalog
+    idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
+    matches_catalog = catalog[idxcatalog]  # matched catalog stars in altaz, skycoord
+    matches_image = image_stars[idxc]  # matched image stars in altaz, skycoord
+    if not matches_image:
+        cloudiness.append(1)
+        times.append(time)
+    else:
+        catalog_row, catalog_col = spherical2pixel(matches_catalog.alt, matches_catalog.az, cam.lens.theta2r, cam)
+        catalog_size = np.ones(len(catalog_row))
+        catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
+        image_row, image_col = spherical2pixel(matches_image.alt, matches_image.az, cam.lens.theta2r, cam)
+        image_size = np.ones(len(image_row))
+        image_matches = np.array([image_row[0], image_col[0], image_size])
+        matches = len(matches_image)
+    return image_matches, catalog_matches, matches
