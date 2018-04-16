@@ -51,15 +51,21 @@ def select_from_catalog(catalog, mag):
         Function selects stars from catalog below given threshold
     Returns
     -------
-    ra_catalog: array
-                right ascension of the selected catalog stars
-    dec_catalog: array
-                right ascension of the selected catalog stars
+    result: astropy table object
+            selected catalog stars
     """
-    reduced_catalog = catalog[(catalog['Vmag'] < mag)]
-    ra_catalog = np.array(pd.DataFrame(reduced_catalog['RA_ICRS_']).dropna())
-    dec_catalog = np.array(pd.DataFrame(reduced_catalog['DE_ICRS_']).dropna())
-    return ra_catalog, dec_catalog
+    catalog = Table.to_pandas(catalog)
+    catalog = catalog[(catalog['Vmag'] < mag)]
+    ra = catalog['RA_ICRS_'].to_frame()
+    dec = catalog['DE_ICRS_'].to_frame()
+    mag = catalog['Vmag'].to_frame()
+    var = catalog['VarFlag'].to_frame()
+    frames = [ra,dec, mag, var]
+    reduced_catalog =  pd.concat(frames, axis=1)
+    reduced_catalog  = reduced_catalog[(reduced_catalog['Vmag']<mag) & (reduced_catalog['VarFlag']!= 3) & (reduced_catalog['VarFlag']!= 2)]
+    reduced_catalog = reduced_catalog.dropna(subset=['RA_ICRS_'])
+    result = Table.from_pandas(reduced_catalog)
+    return result
 
 
 def transform_catalog(ra_catalog, dec_catalog, time, cam):
@@ -67,9 +73,9 @@ def transform_catalog(ra_catalog, dec_catalog, time, cam):
     Parameters
     -----------
     ra_catalog: array
-            Name of the catalog
+                right ascension of catalog stars
     dec_catalog: array
-        Function selects stars from catalog below given threshold
+                declination of catalog stars
     time: astropy timestamp
             timestamp of the image
     cam: string
@@ -102,8 +108,8 @@ def match_catalogs(catalog, image_stars, cam):
         Pixel positions of the matching stars.
     """
     idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
-    matches_catalog = catalog[idxcatalog]  # matched catalog stars in altaz, skycoord
-    matches_image = image_stars[idxc]  # matched image stars in altaz, skycoord
+    matches_catalog = catalog[idxcatalog]
+    matches_image = image_stars[idxc]
     if not matches_image:
         cloudiness.append(1)
         times.append(time)

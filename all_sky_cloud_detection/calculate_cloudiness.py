@@ -16,4 +16,5 @@ def calculate_cloudiness(cam, catalog, matches):
     # row_red, col_red, size nur zum plotten wichtig
     # länge der arrays nur wichtig für bewölkung
     cl = np.round(1-matches/len(row_reduced), 2)
+    print(cl)
     return cl
