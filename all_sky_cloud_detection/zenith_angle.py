@@ -1,6 +1,6 @@
 import astropy.units as u
 from astropy.coordinates import Angle
-from all_sky_cloud_detection.coordinate_transformation import pixel2spherical
+from all_sky_cloud_detection.coordinate_transformation import pixel2horizontal
 from astropy.coordinates import SkyCoord
 
 
@@ -26,7 +26,7 @@ def zenith_angle(row, col, cam, angle, time):
     """
     observer = cam.location
     time = time
-    r, phi, theta = pixel2spherical(row, col, cam.lens.r2theta, cam)
+    r, phi, theta = pixel2horizontal(row, col, cam)
     angle = Angle(angle*u.deg)
     theta_new = theta[theta > (angle)]
     phi_new = phi[theta > (angle)]

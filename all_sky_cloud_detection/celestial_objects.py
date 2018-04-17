@@ -1,5 +1,5 @@
 from astropy.coordinates import solar_system_ephemeris, SkyCoord, AltAz
-from all_sky_cloud_detection.coordinate_transformation import spherical2pixel
+from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 import numpy as np
 from astropy.coordinates import get_body
 
@@ -69,7 +69,7 @@ def get_planets(time, cam):
         Pixel coordinates of celestial objects on the x axis
     """
     pos_altaz = get_planets_altaz(time, cam)
-    row, col = spherical2pixel(pos_altaz.alt, pos_altaz.az, cam.lens.theta2r, cam)
+    row, col = horizontal2pixel(pos_altaz.alt, pos_altaz.az, cam)
     row, col = row[0], col[0]
     size = np.ones(len(row))
     return row, col, size
