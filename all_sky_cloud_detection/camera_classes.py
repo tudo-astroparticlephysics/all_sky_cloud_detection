@@ -25,12 +25,13 @@ class Camera:
     camera class object
     """
 
-    def __init__(self, name, location, lens, sensor, image):
+    def __init__(self, name, location, lens, sensor, image, mag):
         self.sensor = sensor
         self.lens = lens
         self.image = image
         self.name = name
         self.location = location
+        self.mag = mag
 
 
 class Lens:
@@ -140,7 +141,8 @@ cta = Camera(
      EarthLocation(lat=28.7594*u.deg, lon=-17.8761*u.deg, height=2200*u.m),
      Lens('nonlin'),
      Sensor(850, 850, 1000, 1000),
-     Image(849, 849, 849, 87.1*u.deg)
+     Image(849, 849, 849, 87.1*u.deg),
+     6
 )
 
 iceact = Camera(
@@ -148,5 +150,6 @@ iceact = Camera(
      EarthLocation(lat=-89.99*u.deg, lon=-63.45*u.deg, height=2801*u.m),
      Lens('lin'),
      Sensor(640, 480, 1000, 1000),
-     Image(304.5, 250, 326.5, 3*u.deg)
+     Image(304.5, 250, 326.5, 3*u.deg),
+     4
 )
