@@ -2,7 +2,7 @@ from astroquery.vizier import Vizier
 from astropy.coordinates import SkyCoord, AltAz, Angle
 import numpy as np
 import pandas as pd
-from all_sky_cloud_detection.coordinate_transformation import spherical2pixel
+from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 from astropy.table import Table
 
 
@@ -52,17 +52,11 @@ def select_from_catalog(catalog, mag):
     Returns
     -------
     result: astropy table object
-            selected catalog stars
+            selected catalosg stars
     """
     catalog = Table.to_pandas(catalog)
     catalog = catalog[(catalog['Vmag'] < mag)]
-    ra = catalog['RA_ICRS_'].to_frame()
-    dec = catalog['DE_ICRS_'].to_frame()
-    mag = catalog['Vmag'].to_frame()
-    var = catalog['VarFlag'].to_frame()
-    frames = [ra,dec, mag, var]
-    reduced_catalog =  pd.concat(frames, axis=1)
-    reduced_catalog  = reduced_catalog[(reduced_catalog['Vmag']<mag) & (reduced_catalog['VarFlag']!= 3) & (reduced_catalog['VarFlag']!= 2)]
+    reduced_catalog = catalog[(catalog['VarFlag'] != 3) & (catalog['VarFlag'] != 2)]
     reduced_catalog = reduced_catalog.dropna(subset=['RA_ICRS_'])
     result = Table.from_pandas(reduced_catalog)
     return result
@@ -114,10 +108,10 @@ def match_catalogs(catalog, image_stars, cam):
         cloudiness.append(1)
         times.append(time)
     else:
-        catalog_row, catalog_col = spherical2pixel(matches_catalog.alt, matches_catalog.az, cam.lens.theta2r, cam)
+        catalog_row, catalog_col = horizontal2pixel(matches_catalog.alt, matches_catalog.az, cam)
         catalog_size = np.ones(len(catalog_row))
         catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
-        image_row, image_col = spherical2pixel(matches_image.alt, matches_image.az, cam.lens.theta2r, cam)
+        image_row, image_col = horizontal2pixel(matches_image.alt, matches_image.az, cam)
         image_size = np.ones(len(image_row))
         image_matches = np.array([image_row[0], image_col[0], image_size])
         matches = len(matches_image)
