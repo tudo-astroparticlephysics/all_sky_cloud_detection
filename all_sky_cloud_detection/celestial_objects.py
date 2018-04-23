@@ -1,4 +1,4 @@
-from astropy.coordinates import solar_system_ephemeris, SkyCoord, AltAz
+from astropy.coordinates import solar_system_ephemeris, SkyCoord, AltAz, Angle
 from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 import numpy as np
 from astropy.coordinates import get_body
@@ -73,3 +73,13 @@ def get_planets(time, cam):
     row, col = row[0], col[0]
     size = np.ones(len(row))
     return row, col, size
+
+
+def crop_moon(time, cam, image_stars, catalog_stars):
+    planets = get_planets_altaz(time, cam)
+    moon_sun = planets[0:2]
+    idx_img, idx_moon1, d2d, d3d = moon_sun.search_around_sky(image_stars, Angle('15d'))
+    idx_cat, idx_moon2, d2d, d3d = moon_sun.search_around_sky(catalog_stars, Angle('15d'))
+    image_stars = image_stars[~idx_img]
+    catalog_stars = catalog_stars[~idx_cat]
+    return image_stars, catalog_stars

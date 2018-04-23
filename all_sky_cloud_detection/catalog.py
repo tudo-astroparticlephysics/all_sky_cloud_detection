@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 from astropy.table import Table
+from all_sky_cloud_detection.celestial_objects import crop_moon
 
 
 def get_catalog(name, path):
@@ -84,7 +85,7 @@ def transform_catalog(ra_catalog, dec_catalog, time, cam):
     return pos_altaz
 
 
-def match_catalogs(catalog, image_stars, cam):
+def match_catalogs(catalog, image_stars, cam, time):
     """This function compares star positions.
     Parameters
     -----------
@@ -101,6 +102,7 @@ def match_catalogs(catalog, image_stars, cam):
     catalog: array
         Pixel positions of the matching stars.
     """
+    image_stars, catalog = crop_moon(time, cam, image_stars, catalog)
     idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
     matches_catalog = catalog[idxcatalog]
     matches_image = image_stars[idxc]
@@ -108,6 +110,7 @@ def match_catalogs(catalog, image_stars, cam):
         cloudiness.append(1)
         times.append(time)
     else:
+
         catalog_row, catalog_col = horizontal2pixel(matches_catalog.alt, matches_catalog.az, cam)
         catalog_size = np.ones(len(catalog_row))
         catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
@@ -115,4 +118,6 @@ def match_catalogs(catalog, image_stars, cam):
         image_size = np.ones(len(image_row))
         image_matches = np.array([image_row[0], image_col[0], image_size])
         matches = len(matches_image)
-    return image_matches, catalog_matches, matches
+        #img_mat.append(image_matches)
+        #cat_mat.append(catalog_matches)
+    return image_matches, catalog_matches, matches#, img_mat, cat_mat
