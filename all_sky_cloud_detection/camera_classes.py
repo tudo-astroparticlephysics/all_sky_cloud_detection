@@ -129,20 +129,21 @@ class Image:
     -------
     Image class object
     """
-    def __init__(self, radius, zenith_row, zenith_col, az_off):
+    def __init__(self, radius, zenith_row, zenith_col, az_off, threshold, timestamp):
         self.radius = radius
         self.zenith_row = zenith_row
         self.zenith_col = zenith_col
         self.az_off = az_off
-
+        self.threshold = threshold
+        self.timestamp = timestamp
 
 cta = Camera(
      'CTA',
      EarthLocation(lat=28.7594*u.deg, lon=-17.8761*u.deg, height=2200*u.m),
      Lens('nonlin'),
      Sensor(850, 850, 1000, 1000),
-     Image(849, 849, 849, 87.1*u.deg),
-     6
+     Image(849, 849, 849, 87.1*u.deg, 0.0065, 'TIMEUTC'),
+     5.5
 )
 
 iceact = Camera(
@@ -150,6 +151,6 @@ iceact = Camera(
      EarthLocation(lat=-89.99*u.deg, lon=-63.45*u.deg, height=2801*u.m),
      Lens('lin'),
      Sensor(640, 480, 1000, 1000),
-     Image(304.5, 250, 326.5, 3*u.deg),
+     Image(304.5, 250, 326.5, 3*u.deg, 0.00000035, 'DATE-OBS'),
      4
 )
