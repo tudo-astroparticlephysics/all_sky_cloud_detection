@@ -137,6 +137,7 @@ class Image:
         self.threshold = threshold
         self.timestamp = timestamp
 
+
 cta = Camera(
      'CTA',
      EarthLocation(lat=28.7594*u.deg, lon=-17.8761*u.deg, height=2200*u.m),
@@ -151,6 +152,6 @@ iceact = Camera(
      EarthLocation(lat=-89.99*u.deg, lon=-63.45*u.deg, height=2801*u.m),
      Lens('lin'),
      Sensor(640, 480, 1000, 1000),
-     Image(304.5, 250, 326.5, 3*u.deg, 0.00000035, 'DATE-OBS'),
-     4
+     Image(304.5, 250, 326.5, 3*u.deg, 0.000001, 'DATE-OBS'),
+     3.5
 )

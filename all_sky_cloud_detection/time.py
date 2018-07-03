@@ -12,7 +12,6 @@ def get_time(image, cam):
     time: astropy timestamp
             timestamp of the given image
     """
-    #header time angeben für verschiedene ka meras in klassen
     image = fits.open(image)
     timestamp = image[0].header[cam.image.timestamp]
     time = Time(timestamp, scale='utc')

@@ -11,6 +11,7 @@ setup(
         'scikit-image',
         'astropy>=2',
     ],
+    package_data={'all_sky_cloud_detection': 'resources/*'},
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
 )

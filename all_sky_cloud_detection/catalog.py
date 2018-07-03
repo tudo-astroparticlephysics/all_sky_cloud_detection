@@ -1,10 +1,12 @@
 from astroquery.vizier import Vizier
 from astropy.coordinates import SkyCoord, AltAz, Angle
 import numpy as np
-import pandas as pd
 from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 from astropy.table import Table
-from all_sky_cloud_detection.celestial_objects import crop_moon
+from pkg_resources import resource_filename
+
+
+catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
 
 
 def get_catalog(name, path):
@@ -26,7 +28,7 @@ def get_catalog(name, path):
     return catalog
 
 
-def read_catalog(path):
+def read_catalog(max_magnitude=None):
     """This function reads in star catalogs saved as csv file.
     Parameters
     -----------
@@ -37,10 +39,10 @@ def read_catalog(path):
     catalog: astropy table object
             star catalog
     """
-    catalog = pd.read_csv(path)
-    catalog = Table.from_pandas(catalog)
+    catalog = Table.read(catalog_path)
+    if max_magnitude is not None:
+        catalog = catalog[catalog['v_mag'] <= max_magnitude]
     return catalog
-
 
 def select_from_catalog(catalog, mag):
     """This function selects stars from catalog.
@@ -102,13 +104,16 @@ def match_catalogs(catalog, image_stars, cam, time):
     catalog: array
         Pixel positions of the matching stars.
     """
-    image_stars, catalog = crop_moon(time, cam, image_stars, catalog)
+    #image_stars, catalog = crop_moon(time, cam, image_stars, catalog)
     idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
     matches_catalog = catalog[idxcatalog]
     matches_image = image_stars[idxc]
     if not matches_image:
-        cloudiness.append(1)
-        times.append(time)
+        # cloudiness.append(1)
+        # times.append(time)
+        matches = 0
+        image_matches = 0
+        catalog_matches = 0
     else:
 
         catalog_row, catalog_col = horizontal2pixel(matches_catalog.alt, matches_catalog.az, cam)
@@ -118,6 +123,48 @@ def match_catalogs(catalog, image_stars, cam, time):
         image_size = np.ones(len(image_row))
         image_matches = np.array([image_row[0], image_col[0], image_size])
         matches = len(matches_image)
-        #img_mat.append(image_matches)
-        #cat_mat.append(catalog_matches)
-    return image_matches, catalog_matches, matches#, img_mat, cat_mat
+    return image_matches, catalog_matches, matches
+
+
+'''
+
+def match_catalogs(catalog, image_stars, cam, time, mag):#
+    """This function compares star positions.
+    Parameters
+    -----------
+    catalog: array
+            Stars from a catalog.
+    c: array
+        Detected stars in an all sky camera image.
+    cam: string
+        name of the used all sky camera
+    Returns
+    -------
+    c: arrray
+        Pixel positions of the matching stars.
+    catalog: array
+        Pixel positions of the matching stars.
+    """
+    #image_stars, catalog = crop_moon(time, cam, image_stars, catalog)
+    idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
+    matches_catalog = catalog[idxcatalog]
+    matches_image = image_stars[idxc]
+    matches_magnitude = mag[idxcatalog]
+    if not matches_image:
+        # cloudiness.append(1)
+        # times.append(time)
+        matches = 0
+        image_matches = 0
+        catalog_matches = 0
+    else:
+
+        catalog_row, catalog_col = horizontal2pixel(matches_catalog.alt, matches_catalog.az, cam)
+        catalog_size = np.ones(len(catalog_row))
+        catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
+        image_row, image_col = horizontal2pixel(matches_image.alt, matches_image.az, cam)
+        image_size = np.ones(len(image_row))
+        image_matches = np.array([image_row[0], image_col[0], image_size])
+        matches = len(matches_image)
+#    return image_matches, catalog_matches, matches
+    return image_matches, catalog_matches, matches_magnitude
+'''
