@@ -54,7 +54,7 @@ def process_image(path, file_format, cam):
             cl = calculate_cloudiness(cam, catalog, matches)
             cloudiness.append(cl)
             times.append(time)
-    return cloudiness, times, means
+    return cloudiness, times
 
 
 
