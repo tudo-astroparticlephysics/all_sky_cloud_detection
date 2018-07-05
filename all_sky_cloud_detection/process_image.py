@@ -1,121 +1,53 @@
-import glob
 import numpy as np
 from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 from all_sky_cloud_detection.calculate_cloudiness import calculate_cloudiness
 from all_sky_cloud_detection.time import get_time
-from all_sky_cloud_detection.catalog import read_catalog, transform_catalog, get_catalog, select_from_catalog, match_catalogs
+from all_sky_cloud_detection.catalog import read_catalog, transform_catalog, match_catalogs
 from all_sky_cloud_detection.zenith_angle import zenith_angle
 from all_sky_cloud_detection.find_blobs import find_blobs
 
 from all_sky_cloud_detection.io import read_fits
 from all_sky_cloud_detection.preparation import normalize_image
 
-
 def process_image(path, file_format, cam):
-    """This function transforms star coordinates (ra, dec) from a catalog to altaz.
+    """
+
     Parameters
     -----------
-    path: string
-            path of the images to be analyzed
-    file_format: string
-                file format of the images
-    cam: camera class object
+    path: str
+        path to the image to be analyzed
+    file_format: str
+        file format of the images
+    cam: Camera
         class of the all sky camera (camclass.cta or camclass.iceact)
+
     Returns
     -------
-    cloudiness: list of floats
-                Cloudiness of the analyzed images
-    times: list of astropy timestamps
-            Timestamp of the images
+    cloudiness: float
+        Cloudiness of the analyzed images
+    time: astropy.Time
+        Timestamp of the images
     """
+
     catalog = read_catalog(max_magnitude=cam.mag)
-    ra_catalog = reduced_catalog['RA_ICRS_']
-    dec_catalog = reduced_catalog['DE_ICRS_']
-    cloudiness = []
-    times = []
-    means = []
-    for img_file in glob.glob(path):
-        imagess = read_fits(img_file)
-        imagess = normalize_image(imagess, scale=2**16)
-        imagess[np.isnan(imagess)] = np.nanmin(imagess)
-        mean = np.mean(imagess)
-        means.append(mean)
-        row, col, size = find_blobs(img_file, file_format, cam.image.threshold)
-        time = get_time(img_file, cam)
-        image_catalog = zenith_angle(row, col, cam, 20, time)
-        if not image_catalog:
-            cloudiness.append(1)
-            times.append(time)
-        else:
-            image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
-            image_size = np.ones(len(image_row[0]))
-            catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
-            c_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time)
-            cl = calculate_cloudiness(cam, catalog, matches)
-            cloudiness.append(cl)
-            times.append(time)
-    return cloudiness, times
+    ra_catalog = catalog['ra']
+    dec_catalog = catalog['dec']
 
+    imagess = read_fits(path)
+    imagess = normalize_image(imagess, scale=2**16)
+    imagess[np.isnan(imagess)] = np.nanmin(imagess)
 
+    mean = np.mean(imagess)
 
-'''
-import glob
-import numpy as np
-from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
-from all_sky_cloud_detection.calculate_cloudiness import calculate_cloudiness
-from all_sky_cloud_detection.time import get_time
-from all_sky_cloud_detection.catalog import read_catalog, transform_catalog, get_catalog, select_from_catalog, match_catalogs
-from all_sky_cloud_detection.zenith_angle import zenith_angle
-from all_sky_cloud_detection.find_blobs import find_blobs
+    row, col, size = find_blobs(path, file_format, cam.image.threshold)
+    time = get_time(path, cam)
+    image_catalog = zenith_angle(row, col, cam, 20, time)
 
-from all_sky_cloud_detection.io import read_fits
-from all_sky_cloud_detection.preparation import normalize_image
-
-def process_image(path, file_format, cam):
-    """This function transforms star coordinates (ra, dec) from a catalog to altaz.
-    Parameters
-    -----------
-    path: string
-            path of the images to be analyzed
-    file_format: string
-                file format of the images
-    cam: camera class object
-        class of the all sky camera (camclass.cta or camclass.iceact)
-    Returns
-    -------
-    cloudiness: list of floats
-                Cloudiness of the analyzed images
-    times: list of astropy timestamps
-            Timestamp of the images
-    """
-    catalog = read_catalog('../tests/resources/hipparcos_catalog.csv')
-    reduced_catalog = select_from_catalog(catalog, cam.mag)
-    mag = reduced_catalog['Vmag']#
-    ra_catalog = reduced_catalog['RA_ICRS_']
-    dec_catalog = reduced_catalog['DE_ICRS_']
-    cloudiness = []
-    times = []
-    means = []
-    for img_file in glob.glob(path):
-        imagess = read_fits(img_file)
-        imagess = normalize_image(imagess, scale=2**16)
-        imagess[np.isnan(imagess)] = np.nanmin(imagess)
-        mean = np.mean(imagess)
-        means.append(mean)
-        row, col, size = find_blobs(img_file, file_format, cam.image.threshold)
-        time = get_time(img_file, cam)
-        image_catalog = zenith_angle(row, col, cam, 20, time)
-        if not image_catalog:
-            cloudiness.append(1)
-            times.append(time)
-        else:
-            image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
-            image_size = np.ones(len(image_row[0]))
-            catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
-            c_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time, mag)#
-            cl = calculate_cloudiness(cam, catalog, matches, mag)#
-            cloudiness.append(cl)
-            times.append(time)
-    return cloudiness, times, means
-
-'''
+    if not image_catalog:
+        cloudiness = 1.0
+    else:
+        image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
+        catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
+        c_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time)
+        cloudiness = calculate_cloudiness(cam, catalog, matches)
+    return cloudiness, time, mean
