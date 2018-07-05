@@ -5,7 +5,7 @@ from all_sky_cloud_detection.camera_classes import iceact
 
 
 images = [
-    '../tests/resources/iceact_images/cloudy.fits','../tests/resources/iceact_images/starry.fits'
+    '../tests/resources/iceact_images/cloudy.fits', '../tests/resources/iceact_images/starry.fits'
 ]
 
 results = []

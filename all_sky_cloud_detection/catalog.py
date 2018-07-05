@@ -7,6 +7,7 @@ from pkg_resources import resource_filename
 
 
 catalog_path = '../all_sky_cloud_detection/resources/hipparcos.fits.gz'
+#catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
 
 
 def get_catalog(name, path):
@@ -41,6 +42,7 @@ def read_catalog(max_magnitude=None):
     """
     catalog = Table.read(catalog_path)
     if max_magnitude is not None:
+        catalog = catalog[catalog['variability'] == 1]
         catalog = catalog[catalog['v_mag'] <= max_magnitude]
     return catalog
 

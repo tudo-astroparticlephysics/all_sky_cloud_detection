@@ -12,4 +12,4 @@ def test_max_magnitude():
 
     catalog = read_catalog(max_magnitude=8)
 
-    assert len(catalog) == 41411
+    assert len(catalog) == 2895
