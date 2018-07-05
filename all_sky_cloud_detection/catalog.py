@@ -1,4 +1,3 @@
-from astroquery.vizier import Vizier
 from astropy.coordinates import SkyCoord, AltAz, Angle
 import numpy as np
 from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
@@ -8,25 +7,6 @@ from pkg_resources import resource_filename
 
 catalog_path = '../all_sky_cloud_detection/resources/hipparcos.fits.gz'
 #catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
-
-
-def get_catalog(name, path):
-    """This function queries star catalogs from the  VizieR web service
-    Parameters
-    -----------
-    name: string
-            Name of the catalog
-    Returns
-    -------
-    catalog: pandas DataFrame
-            Selected catalog
-    """
-    Custom_Vizier = Vizier(columns=['**'])
-    Custom_Vizier.ROW_LIMIT = -1
-    catalog = Custom_Vizier.get_catalogs(name)[0]
-    catalog = catalog.to_pandas()
-    catalog.to_csv(path)
-    return catalog
 
 
 def read_catalog(max_magnitude=None):
