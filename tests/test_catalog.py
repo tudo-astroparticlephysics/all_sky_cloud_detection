@@ -1,6 +1,6 @@
 def test_read():
-    from all_sky_cloud_detection.catalog import read_catalog
 
+    from all_sky_cloud_detection.catalog import read_catalog
     catalog = read_catalog()
 
     assert len(catalog) == 118218
