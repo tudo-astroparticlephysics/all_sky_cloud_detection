@@ -6,7 +6,7 @@ from astropy.table import Table
 from pkg_resources import resource_filename
 
 
-catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
+catalog_path = '../all_sky_cloud_detection/resources/hipparcos.fits.gz'
 
 
 def get_catalog(name, path):
