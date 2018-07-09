@@ -11,7 +11,7 @@ setup(
         'scikit-image',
         'astropy>=2',
     ],
-    package_data={'all_sky_cloud_detection': 'resources/*'},
+    package_data={'all_sky_cloud_detection': ['resources/hipparcos.fits.gz']},
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
 )
