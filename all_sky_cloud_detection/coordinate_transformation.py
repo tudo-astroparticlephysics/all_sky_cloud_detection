@@ -47,12 +47,12 @@ def pixel2horizontal(row, col, cam):
         Pixel coordinates on the x axis
     mapping_function: string
                         Mapping function, depending on the camera
-    cam: string
-        Name of the camera which took the images
+    cam: camclass object
+        camera which took the images
     Returns
     -------
     r:
-        Distance between the pixel position and the image center
+        Distance between the pixel position and the image center in pixel
     theta:
             Polar angle in degrees
     phi:

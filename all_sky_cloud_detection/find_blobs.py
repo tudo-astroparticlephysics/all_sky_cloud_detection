@@ -24,8 +24,6 @@ def find_blobs(img_name, file_type, threshold):
         x coordinates of found blobs in pixles
     size: array
         Standard deviation of the Gaussian kernel which detected the blob.
-    image: pdf file
-        Image with blobs saved in same directory as the input file
     """
 
     if file_type == 'fits':

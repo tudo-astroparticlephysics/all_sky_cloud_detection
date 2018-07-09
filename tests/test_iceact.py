@@ -14,4 +14,4 @@ def test_starry():
 
     cl, time, mean_brightness = process_image('tests/resources/iceact_images/starry.fits', 'fits', iceact)
 
-    assert cl < 0.2
+    assert cl < 0.3

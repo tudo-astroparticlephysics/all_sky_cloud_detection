@@ -6,7 +6,7 @@ def normalize_image(image, scale=1.0):
     Parameters
     -----------
     image: path
-            Path where the image is located
+            Image path
     scale: float
             Parameter, depending on the image
     Returns
