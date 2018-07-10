@@ -37,19 +37,41 @@ def add_blobs(rows, columns, sizes, ax=None):
     return star_circles
 
 
-def plot_image(path, cam, image_matches, limited_row, limited_col):
-    image = normalize_image(read_fits(path), scale=2**16)
-    row, col, size = find_stars(image, threshold=cam.image.threshold)
-    limited_size = np.ones(len(limited_col))
-    fig, ax = plt.subplots(1, 1)
-    ax.imshow(
-        image,
-        cmap='gray',
-        vmin=np.nanpercentile(image, 1),
-        vmax=np.nanpercentile(image, 99),
-        )
-    add_blobs(limited_row, limited_col, limited_size)
-    add_blobs(image_matches[0], image_matches[1], image_matches[2]*2)
-    plt.savefig('testfigure.png', dpi=300)
-    plt.show()
-    plt.clf()
+def plot_image(path, cam, image_matches, limited_row, limited_col,show_plot='no', save_plot='no'):
+    if save_plot=='yes':
+        image = normalize_image(read_fits(path), scale=2**16)
+        limited_size = np.ones(len(limited_col))
+        fig, ax = plt.subplots(1, 1)
+        ax.imshow(
+            image,
+            cmap='gray',
+            vmin=np.nanpercentile(image, 1),
+            vmax=np.nanpercentile(image, 99),
+            )
+        add_blobs(limited_row, limited_col, limited_size)
+        add_blobs(image_matches[0], image_matches[1], image_matches[2]*2)
+        plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
+        if show_plot=='yes':
+            plt.show()
+        plt.clf()
+
+
+def plot_image_without_blobs(path, cam, show_plot='no', save_plot='no'):
+#def plot_image_without_blobs(path, cam, mean):
+    if save_plot=='yes':
+        image = normalize_image(read_fits(path), scale=2**16)
+        row, col, size = find_stars(image, threshold=cam.image.threshold)
+#        row, col, size = find_stars(image, mean)
+
+        fig, ax = plt.subplots(1, 1)
+        ax.imshow(
+            image,
+            cmap='gray',
+            vmin=np.nanpercentile(image, 1),
+            vmax=np.nanpercentile(image, 99),
+            )
+        add_blobs(row, col, size)
+        plt.savefig('tests/'+str(path[-29:-10])+'_2000.png', dpi=300)
+        if show_plot=='yes':
+            plt.show()
+        plt.clf()

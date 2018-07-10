@@ -6,12 +6,13 @@ import glob
 def process_images(path, file_format, cam):
     results = []
     for img in glob.glob(path):
-        cl, time, mean_brightness = process_image(img, file_format, cam)
+        cl, time, mean_brightness, number = process_image(img, file_format, cam)
         results.append({
             'cloudiness': cl,
             'timestamp': time.iso,
             'mean_brightness': mean_brightness,
             'image': img,
+            'number':number
             })
 
         df = pd.DataFrame(results)

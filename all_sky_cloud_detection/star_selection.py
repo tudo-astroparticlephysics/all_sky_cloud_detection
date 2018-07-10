@@ -2,6 +2,7 @@ import astropy.units as u
 from astropy.coordinates import Angle
 from all_sky_cloud_detection.coordinate_transformation import pixel2horizontal
 from astropy.coordinates import SkyCoord
+import numpy as np
 
 
 def limit_zenith_angle(row, col, cam, angle, time):
@@ -41,3 +42,13 @@ def limit_zenith_angle(row, col, cam, angle, time):
         location=observer
         )
     return c
+
+
+def delete_big_blobs(row, col, size):
+    mask = size < 8
+    new_row = row[mask]
+    new_col = col[mask]
+    new_size = size[mask]
+    number_big_blobs = len(size)-len(new_size)
+    print(number_big_blobs)
+    return new_row, new_col, new_size, number_big_blobs
