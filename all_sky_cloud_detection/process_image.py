@@ -46,17 +46,15 @@ def process_image(path, file_format, cam):
 
     row, col, size = find_blobs(path, file_format, cam.image.threshold)
     time = get_time(path, cam)
-    image_catalog = limit_zenith_angle(row, col, cam, 20, time)
+    image_catalog = limit_zenith_angle(row, col, cam, 30, time)
 
-    limited_row, limited_col= horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
-
-    if not image_catalog:
+    if not image_catalog or len(image_catalog) > 10000:
         cloudiness = 1.0
     else:
         image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
         catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
         image_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time)
-        cloudiness = calculate_cloudiness(cam, catalog, matches, 20, time)
-        plot_image(path, cam, image_matches, limited_row[0], limited_col[0])
+        cloudiness = calculate_cloudiness(cam, catalog, matches, 30, time)
+        #plot_image(path, cam, image_matches, image_row[0], image_col[0])
 
     return cloudiness, time, mean

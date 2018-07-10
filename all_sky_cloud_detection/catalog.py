@@ -5,8 +5,7 @@ from astropy.table import Table
 from pkg_resources import resource_filename
 
 
-catalog_path = '../all_sky_cloud_detection/resources/hipparcos.fits.gz'
-#catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
+catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
 
 
 def read_catalog(max_magnitude=None):
@@ -25,6 +24,7 @@ def read_catalog(max_magnitude=None):
         catalog = catalog[catalog['variability'] == 1]
         catalog = catalog[catalog['v_mag'] <= max_magnitude]
     return catalog
+
 
 def select_from_catalog(catalog, mag):
     """This function selects stars from catalog.
