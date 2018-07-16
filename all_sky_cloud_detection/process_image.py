@@ -9,7 +9,7 @@ from all_sky_cloud_detection.camera_classes import iceact, cta
 from all_sky_cloud_detection.io import read_fits
 from all_sky_cloud_detection.preparation import normalize_image
 from all_sky_cloud_detection.plotting import plot_image, plot_image_without_blobs
-
+from all_sky_cloud_detection.celestial_objects import crop_moon
 
 def process_image(path, file_format, cam):
     """
@@ -56,18 +56,20 @@ def process_image(path, file_format, cam):
     time = get_time(path, cam)
     image_catalog = limit_zenith_angle(row, col, cam, 30, time)
     number = len(image_catalog)
-    if not image_catalog:
+    if not (image_catalog):
         cloudiness = 1.0
-    if len(image_catalog) > 1000 or number_big_blobs > 550:
+    if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
         cloudiness = np.nan
     #    plot_image_without_blobs(path, cam, threshold)
-        plot_image_without_blobs(path, cam, save_plot='yes', show_plot='yes')
+        plot_image_without_blobs(path, cam, save_plot='yes', show_plot='no')
 
     else:
         image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
         catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
         image_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time)
-        cloudiness = calculate_cloudiness(cam, catalog, matches, 30, time)
-        plot_image(path, cam, image_matches, image_row[0], image_col[0], save_plot='yes', show_plot='yes')
+        #image_matches, catalog_matches = crop_moon(time, cam, image_matches, catalog_matches)
+        #print(len(image_matches), len(catalog_matches))
+        cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, matches, 30, time)
+        plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, save_plot='yes', show_plot='no')
 
     return cloudiness, time, mean, number

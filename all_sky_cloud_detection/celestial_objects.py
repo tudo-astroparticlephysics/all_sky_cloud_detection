@@ -17,7 +17,7 @@ def celestial_objects_altaz(time, cam):
         Array of celestial objects in altaz
     """
     observer = cam.location
-    names = ['moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']
+    names = 'moon'#['moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']
     with solar_system_ephemeris.set('builtin'):
         coordinates = get_body(names, time, observer)
 

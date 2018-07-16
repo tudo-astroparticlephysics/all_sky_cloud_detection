@@ -50,5 +50,4 @@ def delete_big_blobs(row, col, size):
     new_col = col[mask]
     new_size = size[mask]
     number_big_blobs = len(size)-len(new_size)
-    print(number_big_blobs)
     return new_row, new_col, new_size, number_big_blobs
