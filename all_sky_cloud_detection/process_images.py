@@ -15,6 +15,6 @@ def process_images(path, cam):
             'number': number
             })
 
-        df = pd.DataFrame(results)
+    df = pd.DataFrame(results)
     df.to_csv('cloudiness.csv')
     return df
