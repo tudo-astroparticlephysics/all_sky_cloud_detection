@@ -6,7 +6,11 @@ import glob
 def process_images(path, cam):
     results = []
     for img in glob.glob(path):
-        cl, time, mean_brightness, number = process_image(img, cam)
+        try:
+            cl, time, mean_brightness, number = process_image(img, cam)
+        except ValueError:
+            print(img)
+            continue
         results.append({
             'cloudiness': cl,
             'timestamp': time.iso,
