@@ -11,7 +11,7 @@ images = [
 results = []
 
 for img in images:
-    cl, time, mean_brightness = process_image(img, cam=iceact, file_format='fits')
+    cl, time, mean_brightness = process_image(img, cam=iceact)
 
     results.append({
         'cloudiness': cl,
