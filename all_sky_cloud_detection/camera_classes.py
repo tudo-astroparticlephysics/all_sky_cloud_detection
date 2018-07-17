@@ -143,8 +143,8 @@ cta = Camera(
      EarthLocation(lat=28.7594*u.deg, lon=-17.8761*u.deg, height=2200*u.m),
      Lens('nonlin'),
      Sensor(850, 850, 1000, 1000),
-     Image(849, 849, 849, 87.1*u.deg, 0.0035, 'TIMEUTC'),
-     5.9
+     Image(849, 849, 849, 87.1*u.deg, 0.003, 'TIMEUTC'),
+     5.7
 )
 
 iceact = Camera(

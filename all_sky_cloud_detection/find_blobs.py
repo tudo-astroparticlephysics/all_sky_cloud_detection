@@ -1,10 +1,10 @@
 # coding: utf-8
-from all_sky_cloud_detection.io import read_fits
+from all_sky_cloud_detection.io import read_file
 from all_sky_cloud_detection.preparation import normalize_image
 from all_sky_cloud_detection.star_detection import find_stars
 
 
-def find_blobs(img_name, file_type, threshold):
+def find_blobs(img_name, threshold):
     """This function searches for bright blobs above the threshold in an image.
 
     Parameters
@@ -25,14 +25,19 @@ def find_blobs(img_name, file_type, threshold):
     size: array
         Standard deviation of the Gaussian kernel which detected the blob.
     """
-
-    if file_type == 'fits':
+    image, file_type = read_file(img_name)
+    if file_type == '.fits' or file_type == '.gz':
         scale = 2**16
-        image = normalize_image(read_fits(img_name), scale=scale)
+        image = normalize_image(image, scale=scale)
+        row, col, size = find_stars(image, threshold=threshold)
+        return row, col, size
+    if file_type == '.mat':
+        scale = 2**16
+        image = normalize_image(image, scale=scale)
         row, col, size = find_stars(image, threshold=threshold)
         return row, col, size
     else:
         scale = 2**16
-        image = normalize_image(read_fits(img_name), scale=scale)
+        image = normalize_image(image, scale=scale)
         row, col, size = find_stars(image, threshold=threshold)
         return row, col, size

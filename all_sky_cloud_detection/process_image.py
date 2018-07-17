@@ -6,12 +6,13 @@ from all_sky_cloud_detection.catalog import read_catalog, transform_catalog, mat
 from all_sky_cloud_detection.star_selection import limit_zenith_angle, delete_big_blobs
 from all_sky_cloud_detection.find_blobs import find_blobs
 from all_sky_cloud_detection.camera_classes import iceact, cta
-from all_sky_cloud_detection.io import read_fits
+from all_sky_cloud_detection.io import read_file
 from all_sky_cloud_detection.preparation import normalize_image
 from all_sky_cloud_detection.plotting import plot_image, plot_image_without_blobs
 from all_sky_cloud_detection.celestial_objects import crop_moon
 
-def process_image(path, file_format, cam):
+
+def process_image(path, cam):
     """
     This function processes an image and returns a cloudiness parameter,
     the time the image was taken and the average pixel brightness.
@@ -38,22 +39,14 @@ def process_image(path, file_format, cam):
     ra_catalog = catalog['ra']
     dec_catalog = catalog['dec']
 
-    imagess = read_fits(path)
+    imagess, file_type = read_file(path)
     imagess = normalize_image(imagess, scale=2**16)
     imagess[np.isnan(imagess)] = np.nanmin(imagess)
 
     mean = np.mean(imagess)
-    #if mean < 0.003:
-    #    threshold = np.float(0.0025)
-    #    print('hi')
-    #else:
-    #    print('ho')
-    #    threshold = np.float(mean)
-    #row, col, size = find_blobs(path, file_format, threshold)
-    row, col, size = find_blobs(path, file_format, cam.image.threshold)
-
+    row, col, size = find_blobs(path, cam.image.threshold)
     row, col, size, number_big_blobs = delete_big_blobs(row, col, size)
-    time = get_time(path, cam)
+    time = get_time(path, cam, file_type)
     image_catalog = limit_zenith_angle(row, col, cam, 30, time)
     number = len(image_catalog)
     if not (image_catalog):
@@ -61,7 +54,7 @@ def process_image(path, file_format, cam):
     if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
         cloudiness = np.nan
     #    plot_image_without_blobs(path, cam, threshold)
-        plot_image_without_blobs(path, cam, save_plot='yes', show_plot='no')
+        plot_image_without_blobs(path, cam, save_plot='yes', show_plot='yes')
 
     else:
         image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
