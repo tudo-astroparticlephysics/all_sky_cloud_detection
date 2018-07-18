@@ -3,7 +3,7 @@ from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 import numpy as np
 from astropy.coordinates import get_body
 
-def celestial_objects_altaz(time, cam):
+def moon_coordinates(time, cam):
     """This function searches for positions of celestial objects at a given time
     Parameters
     -----------
@@ -25,7 +25,9 @@ def celestial_objects_altaz(time, cam):
     dec_objects = [coordinates.dec]
     pos = SkyCoord(ra=ra_objects, dec=dec_objects, frame='icrs', unit='deg')
     pos_altaz = pos.transform_to(AltAz(obstime=time, location=observer))
-    return pos_altaz
+    alt = pos_altaz.alt
+    az = pos_altaz.az
+    return alt, az
 
 
 def celestial_objects(time, cam):

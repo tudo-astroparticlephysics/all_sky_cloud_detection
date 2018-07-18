@@ -55,9 +55,9 @@ def plot_image_without_blobs(path, cam, show_plot='no', save_plot='no'):
         if show_plot == 'yes':
             plt.show()
         if file_type == '.fits' or file_type == '.gz':
-            plt.savefig('tests/'+str(path[-29:-10])+'_2000.png', dpi=300)
+            plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
         if file_type == '.mat':
-            plt.savefig('tests/'+str(path[-23:-4])+'_2000.png', dpi=300)
+            plt.savefig('tests/'+str(path[-23:-4])+'.png', dpi=300)
         plt.close()
 
 
@@ -77,7 +77,7 @@ def plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, s
         if len(str(image_matches)) == 1:
             add_blobs(limited_row, limited_col, limited_size*2)
             if file_type == '.fits' or file_type == '.gz':
-                plt.savefig('tests/'+str(path[-29:-10])+'_2000.png', dpi=300)
+                plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
             if file_type == '.mat':
                 plt.savefig('tests/'+str(path[-23:-4])+'_2000.png', dpi=300)
             if show_plot == 'yes':
@@ -88,9 +88,9 @@ def plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, s
             add_blobs(image_matches[0], image_matches[1], image_matches[2]*2)
 
             if file_type == '.fits' or file_type == '.gz':
-                plt.savefig('tests/'+str(path[-29:-10])+'_2000.png', dpi=300)
+                plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
             if file_type == '.mat':
-                plt.savefig('tests/'+str(path[-23:-4])+'_2000.png', dpi=300)
+                plt.savefig('tests/'+str(path[-23:-4])+'.png', dpi=300)
             if show_plot == 'yes':
                 plt.show()
             plt.close()
