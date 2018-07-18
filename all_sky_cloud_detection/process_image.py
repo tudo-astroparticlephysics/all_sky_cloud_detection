@@ -54,7 +54,7 @@ def process_image(path, cam):
     if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
         cloudiness = np.nan
     #    plot_image_without_blobs(path, cam, threshold)
-        plot_image_without_blobs(path, cam, save_plot='no', show_plot='yes')
+        plot_image_without_blobs(path, cam, save_plot='no', show_plot='now')
 
     else:
         image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
@@ -63,6 +63,6 @@ def process_image(path, cam):
         #image_matches, catalog_matches = crop_moon(time, cam, image_matches, catalog_matches)
         #print(len(image_matches), len(catalog_matches))
         cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, matches, 30, time)
-        plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, save_plot='yes', show_plot='no')
+        plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, save_plot='no', show_plot='no')
 
     return cloudiness, time, mean, number, moon_hight
