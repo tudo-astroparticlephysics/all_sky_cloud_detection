@@ -46,7 +46,7 @@ def process_image(path, cam):
     row, col, size = find_blobs(path, cam.image.threshold)
     row, col, size, number_big_blobs = delete_big_blobs(row, col, size)
     time = get_time(path, cam, file_type)
-    moon_alt, moon_az = moon_coordinates(time, cam)
+    moon_hight = moon_coordinates(time, cam)
     image_catalog = limit_zenith_angle(row, col, cam, 30, time)
     number = len(image_catalog)
     if not (image_catalog):
@@ -65,4 +65,4 @@ def process_image(path, cam):
         cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, matches, 30, time)
         plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, save_plot='yes', show_plot='no')
 
-    return cloudiness, time, mean, number, moon_alt, moon_az
+    return cloudiness, time, mean, number, moon_hight

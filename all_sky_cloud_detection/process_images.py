@@ -7,7 +7,7 @@ def process_images(path, cam):
     results = []
     for img in glob.glob(path):
         try:
-            cl, time, mean_brightness, number, moon_alt, moon_az = process_image(img, cam)
+            cl, time, mean_brightness, number, moon_hight = process_image(img, cam)
         except ValueError:
             print(img)
             continue
@@ -17,8 +17,7 @@ def process_images(path, cam):
             'mean_brightness': mean_brightness,
             'image': img,
             'number': number,
-            'moon_alt': moon_alt,
-            'moon_az': moon_az
+            'moon_hight': moon_hight,
             })
 
     df = pd.DataFrame(results)

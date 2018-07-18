@@ -25,9 +25,9 @@ def moon_coordinates(time, cam):
     dec_objects = [coordinates.dec]
     pos = SkyCoord(ra=ra_objects, dec=dec_objects, frame='icrs', unit='deg')
     pos_altaz = pos.transform_to(AltAz(obstime=time, location=observer))
-    alt = pos_altaz.alt
-    az = pos_altaz.az
-    return alt, az
+    moon_hight = np.sin(pos_altaz.alt.radian)
+
+    return moon_hight
 
 
 def celestial_objects(time, cam):
