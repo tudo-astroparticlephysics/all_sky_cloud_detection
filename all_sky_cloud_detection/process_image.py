@@ -54,7 +54,7 @@ def process_image(path, cam):
     if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
         cloudiness = np.nan
     #    plot_image_without_blobs(path, cam, threshold)
-        plot_image_without_blobs(path, cam, save_plot='no', show_plot='now')
+        plot_image_without_blobs(path, cam, save_plot='no', show_plot='no')
 
     else:
         image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
