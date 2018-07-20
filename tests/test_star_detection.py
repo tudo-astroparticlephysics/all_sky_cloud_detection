@@ -1,4 +1,4 @@
-test_file = 'tests/resources/CTA_AllSkyCam_2015-12-22_03-35-55_1.fits.gz'
+test_file = 'tests/resources/cta_images/starry.fits.gz'
 
 
 def test_find_stars():
