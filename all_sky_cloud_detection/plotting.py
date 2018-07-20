@@ -36,9 +36,8 @@ def add_blobs(rows, columns, sizes, ax=None):
     return star_circles
 
 
-def plot_image_without_blobs(path, cam, show_plot='no', save_plot='no'):
-#def plot_image_without_blobs(path, cam, mean):
-    if save_plot == 'yes':
+def plot_image_without_blobs(path, cam, show_plot=False, save_plot=False):
+    if save_plot is True or show_plot is True:
         image, file_type = read_file(path)
         image = normalize_image(image, scale=2**16)
         row, col, size = find_stars(image, threshold=cam.image.threshold)
@@ -52,18 +51,20 @@ def plot_image_without_blobs(path, cam, show_plot='no', save_plot='no'):
             vmax=np.nanpercentile(image, 99),
             )
         add_blobs(row, col, size)
-        if show_plot == 'yes':
+
+        if save_plot is True:
+            if file_type == '.fits' or file_type == '.gz':
+                plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
+                #plt.savefig('tests/'+str(path[-10:-5])+'.png', dpi=300)
+                if file_type == '.mat':
+                    plt.savefig('tests/'+str(path[-23:-4])+'.png', dpi=300)
+        if show_plot is True:
             plt.show()
-        if file_type == '.fits' or file_type == '.gz':
-            plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
-        if file_type == '.mat':
-            plt.savefig('tests/'+str(path[-23:-4])+'.png', dpi=300)
         plt.close()
 
 
-def plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, show_plot='no', save_plot='no'):
-    if save_plot == 'yes':
-        #image = normalize_image(read_file(path), scale=2**16)
+def plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, show_plot=False, save_plot=False):
+    if save_plot is True or show_plot is True:
         image, file_type = read_file(path)
         image = normalize_image(image, scale=2**16)
         limited_size = np.ones(len(limited_col))
@@ -76,21 +77,16 @@ def plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, s
             )
         if len(str(image_matches)) == 1:
             add_blobs(limited_row, limited_col, limited_size*2)
-            if file_type == '.fits' or file_type == '.gz':
-                plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
-            if file_type == '.mat':
-                plt.savefig('tests/'+str(path[-23:-4])+'_2000.png', dpi=300)
-            if show_plot == 'yes':
-                plt.show()
-            plt.close()
+
         else:
             add_blobs(limited_row, limited_col, limited_size*2)
             add_blobs(image_matches[0], image_matches[1], image_matches[2]*2)
-
+        if save_plot is True:
             if file_type == '.fits' or file_type == '.gz':
                 plt.savefig('tests/'+str(path[-29:-10])+'.png', dpi=300)
+                #plt.savefig('tests/'+str(path[-10:-5])+'.png', dpi=300)
             if file_type == '.mat':
-                plt.savefig('tests/'+str(path[-23:-4])+'.png', dpi=300)
-            if show_plot == 'yes':
-                plt.show()
-            plt.close()
+                plt.savefig('tests/'+str(path[-23:-4])+'_2000.png', dpi=300)
+        if show_plot is True:
+            plt.show()
+        plt.close()

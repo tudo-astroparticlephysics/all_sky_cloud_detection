@@ -3,11 +3,11 @@ import pandas as pd
 import glob
 
 
-def process_images(path, cam):
+def process_images(path, cam, show_plot=False, save_plot=False):
     results = []
     for img in glob.glob(path):
         try:
-            cl, time, mean_brightness, number, moon_hight = process_image(img, cam)
+            cl, time, mean_brightness, number, moon_altitude = process_image(img, cam, show_plot, save_plot)
         except ValueError:
             print(img)
             continue
@@ -17,7 +17,7 @@ def process_images(path, cam):
             'mean_brightness': mean_brightness,
             'image': img,
             'number': number,
-            'moon_hight': moon_hight,
+            'moon_altitude': moon_altitude,
             })
 
     df = pd.DataFrame(results)
