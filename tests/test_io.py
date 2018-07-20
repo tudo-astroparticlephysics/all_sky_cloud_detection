@@ -1,9 +1,9 @@
-test_file = 'tests/resources/CTA_AllSkyCam_2016-01-04_23-39-11.mat_1.fits.gz'
+test_file = 'tests/resources/cta_images/starry.fits.gz'
 
 
-def test_fits():
-    from all_sky_cloud_detection.io import read_fits
+def test_file():
+    from all_sky_cloud_detection.io import read_file
 
-    image = read_fits(test_file)
+    image, file_format = read_file(test_file)
 
     assert image.shape == (1699, 1699)
