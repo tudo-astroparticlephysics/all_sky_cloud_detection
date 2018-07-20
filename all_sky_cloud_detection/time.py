@@ -1,7 +1,6 @@
 from astropy.time import Time
 from astropy.io import fits
 import scipy.io as sio
-from all_sky_cloud_detection.camera_classes import iceact, cta
 
 
 def get_time(image, cam, file_type):
@@ -15,21 +14,25 @@ def get_time(image, cam, file_type):
     time: astropy timestamp
             timestamp of the given image
     """
-    if cam == cta:
-        if file_type == '.fits' or file_type == '.gz':
-            #hier mit io funktion verkürzen
-            image = fits.open(image)
-            timestamp = image[0].header['TIMEUTC']
-            time = Time(timestamp, scale='utc')
-            if file_type == '.mat':
-                timestamp = sio.loadmat(image)['UTC1']
+    timestamps = cam.image.timestamp
+    if file_type == '.fits' or file_type == '.gz':
+        image = fits.open(image)
+        for timestamp in timestamps:
+            try:
+                timestamp = image[0].header[timestamp]
+                time = Time(timestamp, scale='utc')
+                print('Wrong timestamp')
+            except KeyError:
+                continue
+
+    if file_type == '.mat':
+        for timestamp in timestamps:
+            try:
+                timestamp = sio.loadmat(image)[timestamp]
                 date, time = timestamp[0].split(' ')
                 date = date.replace('/', '-')
                 time = Time(date+str('T')+time, scale='utc')
-        if cam == iceact:
-            if file_type == '.fits' or file_type == '.gz':
-                #hier mit io funktion verkürzen
-                image = fits.open(image)
-                timestamp = image[0].header['DATE-OBS']
-                time = Time(timestamp, scale='utc')
+            except KeyError:
+                print('Wrong timestamp')
+                continue
     return time
