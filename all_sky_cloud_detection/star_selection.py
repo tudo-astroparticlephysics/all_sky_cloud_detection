@@ -45,7 +45,7 @@ def limit_zenith_angle(row, col, cam, angle, time):
 
 
 def delete_big_blobs(row, col, size):
-    mask = size < 8
+    mask = size < 20
     new_row = row[mask]
     new_col = col[mask]
     new_size = size[mask]
