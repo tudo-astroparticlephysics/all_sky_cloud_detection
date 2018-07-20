@@ -48,7 +48,6 @@ def process_image(path, cam, show_plot=False, save_plot=False):
     time = get_time(path, cam, file_type)
     moon_altitude = moon_coordinates(time, cam)
     image_catalog = limit_zenith_angle(row, col, cam, 30, time)
-    number = len(image_catalog)
     if not (image_catalog):
         cloudiness = 1.0
     if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
@@ -60,8 +59,7 @@ def process_image(path, cam, show_plot=False, save_plot=False):
         catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
         image_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time)
         #image_matches, catalog_matches = crop_moon(time, cam, image_matches, catalog_matches)
-        cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, matches, 30, time)
-        print(cloudiness)
+        cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, matches, cam.image.limit_zenith, time)
         plot_image(path, cam, image_matches, limited_row, limited_col, cloudiness, save_plot=save_plot, show_plot=show_plot)
 
-    return cloudiness, time, mean, number, moon_altitude
+    return cloudiness, time, mean, moon_altitude

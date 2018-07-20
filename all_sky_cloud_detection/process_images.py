@@ -7,7 +7,7 @@ def process_images(path, cam, show_plot=False, save_plot=False):
     results = []
     for img in glob.glob(path):
         try:
-            cl, time, mean_brightness, number, moon_altitude = process_image(img, cam, show_plot, save_plot)
+            cl, time, mean_brightness, moon_altitude = process_image(img, cam, show_plot, save_plot)
         except ValueError:
             print(img)
             continue
@@ -16,7 +16,6 @@ def process_images(path, cam, show_plot=False, save_plot=False):
             'timestamp': time.iso,
             'mean_brightness': mean_brightness,
             'image': img,
-            'number': number,
             'moon_altitude': moon_altitude,
             })
 

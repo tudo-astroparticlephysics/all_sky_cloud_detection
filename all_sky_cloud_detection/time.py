@@ -1,7 +1,7 @@
 from astropy.time import Time
 from astropy.io import fits
 import scipy.io as sio
-
+from all_sky_cloud_detection.camera_classes import cta
 
 def get_time(image, cam, file_type):
     """This function gives the timestamp embedded in the fits header
@@ -21,7 +21,7 @@ def get_time(image, cam, file_type):
             try:
                 timestamp = image[0].header[timestamp]
                 time = Time(timestamp, scale='utc')
-                print('Wrong timestamp')
+            #    print('Wrong timestamp')
             except KeyError:
                 continue
 
@@ -29,10 +29,11 @@ def get_time(image, cam, file_type):
         for timestamp in timestamps:
             try:
                 timestamp = sio.loadmat(image)[timestamp]
-                date, time = timestamp[0].split(' ')
-                date = date.replace('/', '-')
-                time = Time(date+str('T')+time, scale='utc')
+                if cam == cta:
+                    date, time = timestamp[0].split(' ')
+                    date = date.replace('/', '-')
+                    time = Time(date+str('T')+time, scale='utc')
             except KeyError:
-                print('Wrong timestamp')
+        #        print('Wrong timestamp')
                 continue
     return time
