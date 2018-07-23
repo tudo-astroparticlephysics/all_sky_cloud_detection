@@ -2,7 +2,8 @@ from skimage.feature import blob_log
 import warnings
 
 
-def find_stars(image, threshold, min_sigma=1, max_sigma=8, num_sigma=3):
+#def find_stars(image, threshold, min_sigma=1, max_sigma=8, num_sigma=3):
+def find_stars(image, threshold, min_sigma=2, max_sigma=15, num_sigma=3):
     """This function finds bright blobs in an image using the Laplacian of Gaussion method.
     Parameters
     -----------

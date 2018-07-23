@@ -108,11 +108,11 @@ def plot_image(path, cam, image_matches, limited_row, limited_col, time, show_pl
             vmax=np.nanpercentile(image, 99),
             )
         if len(str(image_matches)) == 1:
-            add_blobs(limited_row, limited_col, limited_size)
+            add_blobs(limited_row, limited_col, limited_size*2)
 
         else:
-            add_blobs(limited_row, limited_col, limited_size)
-            add_blobs(image_matches[0], image_matches[1], image_matches[2])
+            add_blobs(limited_row, limited_col, limited_size*2)
+            add_blobs(image_matches[0], image_matches[1], image_matches[2]*2)
         if save_plot is True:
             if file_type == '.fits' or file_type == '.gz':
                 plt.savefig('tests/'+str(time)+'.png', dpi=300)
