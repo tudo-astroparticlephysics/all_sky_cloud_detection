@@ -152,6 +152,7 @@ iceact = Camera(
      EarthLocation(lat=-89.99*u.deg, lon=-63.45*u.deg, height=2801*u.m),
      Lens('lin'),
      Sensor(640, 480, 1000, 1000),
-     Image(304.5, 250, 326.5, 3*u.deg, 0.00000055, ['DATE-OBS'], 20),
-     3.6
+     Image(304.5, 250, 326.5, 3*u.deg, 0.0000003, ['DATE-OBS'], 20),
+     3.8
 )
+#0.0000002 3.75

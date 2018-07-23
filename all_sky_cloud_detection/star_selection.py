@@ -3,6 +3,7 @@ from astropy.coordinates import Angle
 from all_sky_cloud_detection.coordinate_transformation import pixel2horizontal
 from astropy.coordinates import SkyCoord
 import numpy as np
+from all_sky_cloud_detection.preparation import normalize_image
 
 
 def limit_zenith_angle(row, col, cam, angle, time):
@@ -51,3 +52,10 @@ def delete_big_blobs(row, col, size):
     new_size = size[mask]
     number_big_blobs = len(size)-len(new_size)
     return new_row, new_col, new_size, number_big_blobs
+
+
+def mean_pixel_brightness(image, file_type):
+    image = normalize_image(image, scale=2**16)
+    image[np.isnan(image)] = np.nanmin(image)
+    mean = np.mean(image)
+    return mean

@@ -4,7 +4,7 @@ import numpy as np
 from astropy.coordinates import get_body
 
 def moon_coordinates(time, cam):
-    """This function searches for positions of celestial objects at a given time
+    """This function searches for the moon position at a given time
     Parameters
     -----------
     time: astropy SkyCoord time object
@@ -13,19 +13,19 @@ def moon_coordinates(time, cam):
         Camera name
     Returns
     -------
-    pos_altaz: array
-        Array of celestial objects in altaz
+    moon_altitude: float
+        Sinus of the moon altitude in rad
     """
     observer = cam.location
-    names = 'moon'#['moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']
+    object = 'moon'
     with solar_system_ephemeris.set('builtin'):
-        coordinates = get_body(names, time, observer)
+        coordinates = get_body(object, time, observer)
 
-    ra_objects = [coordinates.ra]
-    dec_objects = [coordinates.dec]
-    pos = SkyCoord(ra=ra_objects, dec=dec_objects, frame='icrs', unit='deg')
-    pos_altaz = pos.transform_to(AltAz(obstime=time, location=observer))
-    moon_altitude = np.sin(pos_altaz.alt.radian)
+    ra = coordinates.ra
+    dec = coordinates.dec
+    moon_position = SkyCoord(ra=ra, dec=dec, frame='icrs', unit='deg')
+    moon_position_altaz = moon_position.transform_to(AltAz(obstime=time, location=observer))
+    moon_altitude = np.sin(moon_position_altaz.alt.radian)
 
     return moon_altitude
 
@@ -45,7 +45,7 @@ def celestial_objects(time, cam):
     col: Array
         Pixel coordinates of celestial objects on the x axis
     """
-    pos_altaz = celestial_objects_altaz(time, cam)
+    pos_altaz = moon_coordinates(time, cam)
     row, col = horizontal2pixel(pos_altaz.alt, pos_altaz.az, cam)
     row, col = row[0], col[0]
     size = np.ones(len(row))
@@ -53,10 +53,9 @@ def celestial_objects(time, cam):
 
 
 def crop_moon(time, cam, image_stars, catalog_stars):
-    planets = celestial_objects_altaz(time, cam)
-    moon_sun = planets[0:2]
-    idx_img, idx_moon1, d2d, d3d = moon_sun.search_around_sky(image_stars, Angle('15d'))
-    idx_cat, idx_moon2, d2d, d3d = moon_sun.search_around_sky(catalog_stars, Angle('15d'))
+    moon_position = moon_coordinates(time, cam)
+    idx_img, idx_moon1, d2d, d3d = moon_position.search_around_sky(image_stars, Angle('15d'))
+    idx_cat, idx_moon2, d2d, d3d = moon_position.search_around_sky(catalog_stars, Angle('15d'))
     image_stars = image_stars[~idx_img]
     catalog_stars = catalog_stars[~idx_cat]
     return image_stars, catalog_stars

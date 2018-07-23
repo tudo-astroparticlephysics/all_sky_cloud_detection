@@ -19,9 +19,9 @@ def calculate_cloudiness(cam, catalog, matches, angle, time):
     cloudiness: float
         Cloudiness of the analyzed image
     """
-    row, col = horizontal2pixel(catalog.alt, catalog.az, cam)
+    catalog_row, catalog_col = horizontal2pixel(catalog.alt, catalog.az, cam)
 
-    limited_catalog = limit_zenith_angle(row[0], col[0], cam, angle, time)
-    limited_row, limited_col = horizontal2pixel(limited_catalog.alt, limited_catalog.az, cam)
-    cloudiness = np.round(1-matches/len(limited_col), 2)
-    return cloudiness, limited_row[0], limited_col[0]
+    limited_catalog = limit_zenith_angle(catalog_row[0], catalog_col[0], cam, angle, time)
+    limited_catalog_row, limited_catalog_col = horizontal2pixel(limited_catalog.alt, limited_catalog.az, cam)
+    cloudiness = np.round(1-matches/len(limited_catalog_col), 2)
+    return cloudiness, limited_catalog_row[0], limited_catalog_col[0]
