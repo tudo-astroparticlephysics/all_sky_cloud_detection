@@ -69,7 +69,7 @@ def transform_catalog(ra_catalog, dec_catalog, time, cam):
     return pos_altaz
 
 
-def match_catalogs(catalog, image_stars, cam, time):
+def match_catalogs(catalog, image_stars, cam, time, magnitude):
     """This function compares star positions.
     Parameters
     -----------
@@ -86,14 +86,11 @@ def match_catalogs(catalog, image_stars, cam, time):
     catalog: array
         Pixel positions of the matching stars.
     """
-    #image_stars, catalog = crop_moon(time, cam, image_stars, catalog)
     idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
     matches_catalog = catalog[idxcatalog]
+    magnitude_matches = magnitude[idxcatalog]
     matches_image = image_stars[idxc]
     if not matches_image:
-        # cloudiness.append(1)
-        # times.append(time)
-        matches = 0
         image_matches = 0
         catalog_matches = 0
     else:
@@ -104,49 +101,4 @@ def match_catalogs(catalog, image_stars, cam, time):
         image_row, image_col = horizontal2pixel(matches_image.alt, matches_image.az, cam)
         image_size = np.ones(len(image_row))
         image_matches = np.array([image_row[0], image_col[0], image_size])
-        matches = len(matches_image)
-    return image_matches, catalog_matches, matches
-
-
-'''
-
-def match_catalogs(catalog, image_stars, cam, time, mag):#
-    """This function compares star positions.
-    Parameters
-    -----------
-    catalog: array
-            Stars from a catalog.
-    c: array
-        Detected stars in an all sky camera image.
-    cam: string
-        name of the used all sky camera
-    Returns
-    -------
-    c: arrray
-        Pixel positions of the matching stars.
-    catalog: array
-        Pixel positions of the matching stars.
-    """
-    #image_stars, catalog = crop_moon(time, cam, image_stars, catalog)
-    idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
-    matches_catalog = catalog[idxcatalog]
-    matches_image = image_stars[idxc]
-    matches_magnitude = mag[idxcatalog]
-    if not matches_image:
-        # cloudiness.append(1)
-        # times.append(time)
-        matches = 0
-        image_matches = 0
-        catalog_matches = 0
-    else:
-
-        catalog_row, catalog_col = horizontal2pixel(matches_catalog.alt, matches_catalog.az, cam)
-        catalog_size = np.ones(len(catalog_row))
-        catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
-        image_row, image_col = horizontal2pixel(matches_image.alt, matches_image.az, cam)
-        image_size = np.ones(len(image_row))
-        image_matches = np.array([image_row[0], image_col[0], image_size])
-        matches = len(matches_image)
-#    return image_matches, catalog_matches, matches
-    return image_matches, catalog_matches, matches_magnitude
-'''
+    return image_matches, catalog_matches, magnitude_matches

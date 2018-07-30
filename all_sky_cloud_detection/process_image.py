@@ -9,9 +9,11 @@ from all_sky_cloud_detection.plotting import plot_image, plot_image_without_blob
 from all_sky_cloud_detection.celestial_objects import moon_coordinates
 from all_sky_cloud_detection.star_selection import mean_pixel_brightness
 from all_sky_cloud_detection.io import read_file
+from all_sky_cloud_detection.catalog import read_catalog
 
 
-def process_image(path, cam, catalog, show_plot=False, save_plot=False):
+
+def process_image(path, cam, show_plot=False, save_plot=False):
     """
     This function processes an image and returns a cloudiness parameter,
     the time the image was taken and the average pixel brightness.
@@ -39,10 +41,11 @@ def process_image(path, cam, catalog, show_plot=False, save_plot=False):
     moon_altitude: float
         sin(moon_altitude) of the moon in the image in rad
     """
-
+    catalog = read_catalog(max_magnitude=cam.mag)
+    magnitude = catalog['v_mag']
     image, file_type = read_file(path)
     mean_brightness = mean_pixel_brightness(image, file_type)
-
+    print('Alle Sterne', len(magnitude))
     image_row, image_col, image_size = find_blobs(path, cam.image.threshold)
     image_row, image_col, image_size, number_big_blobs = delete_big_blobs(image_row, image_col, image_size)
     time = get_time(path, cam, file_type)
@@ -50,8 +53,7 @@ def process_image(path, cam, catalog, show_plot=False, save_plot=False):
     image_catalog = limit_zenith_angle(image_row, image_col, cam, cam.image.limit_zenith, time)
     if not (image_catalog):
         cloudiness = 1.0
-    #if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
-    if len(image_catalog) > 1800 or len(image_catalog)==0 or number_big_blobs > 650:
+    if len(image_catalog) > 1800 or len(image_catalog)== 0 or number_big_blobs > 650:
         cloudiness = np.nan
         plot_image_without_blobs(path, cam, time, save_plot=save_plot, show_plot=show_plot)
 
@@ -60,9 +62,8 @@ def process_image(path, cam, catalog, show_plot=False, save_plot=False):
         dec_catalog = catalog['dec']
         image_row, image_col = horizontal2pixel(image_catalog.alt, image_catalog.az, cam)
         catalog = transform_catalog(ra_catalog, dec_catalog, time, cam)
-        image_matches, catalog_matches, matches = match_catalogs(catalog, image_catalog, cam, time)
-        #image_matches, catalog_matches = crop_moon(time, cam, image_matches, catalog_matches)
-        cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, matches, cam.image.limit_zenith, time)
+        image_matches, catalog_matches, matches_magnitude = match_catalogs(catalog, image_catalog, cam, time, magnitude)
+        cloudiness, limited_row, limited_col = calculate_cloudiness(cam, catalog, cam.image.limit_zenith, time, matches_magnitude, magnitude)
         plot_image(path, cam, image_matches, limited_row, limited_col, time, save_plot=save_plot, show_plot=show_plot)
 
     return cloudiness, time, mean_brightness, moon_altitude

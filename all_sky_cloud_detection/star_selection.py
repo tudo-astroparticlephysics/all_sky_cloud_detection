@@ -5,7 +5,6 @@ from astropy.coordinates import SkyCoord
 import numpy as np
 from all_sky_cloud_detection.preparation import normalize_image
 
-
 def limit_zenith_angle(row, col, cam, angle, time):
     """This function limits the zenith angle and thus the number of stars used
      in the calculation of cloud cover. If the angle is set to 20 degrees,
@@ -32,9 +31,12 @@ def limit_zenith_angle(row, col, cam, angle, time):
     observer = cam.location
     time = time
     r, phi, theta = pixel2horizontal(row, col, cam)
+
     angle = Angle(angle*u.deg)
-    theta_new = theta[theta > (angle)]
-    phi_new = phi[theta > (angle)]
+    mask = theta > angle
+    theta_new = theta[mask]
+    phi_new = phi[mask]
+
     c = SkyCoord(
         az=phi_new,
         alt=theta_new,
@@ -43,6 +45,48 @@ def limit_zenith_angle(row, col, cam, angle, time):
         location=observer
         )
     return c
+
+def limit_zenith_angle_catalog(row, col, cam, angle, time, magnitude):
+    """This function limits the zenith angle and thus the number of stars used
+     in the calculation of cloud cover. If the angle is set to 20 degrees,
+     the stars used in the calculation are in a zenith angle range of 0 to 80
+     degrees.
+    Parameters
+    -----------
+    row: array
+        pixel positions, y axis
+    col: array
+        pixel positions, x axis
+    cam: string
+        name of the used all sky camera
+    angle: float
+            limitation of the zenith angle
+    time: astropy timestamp
+            timestamp of the used image
+
+    Returns
+    -------
+    c: array of skycoord objects
+        azimuth and altitude of the remaining bright blobs
+    """
+    observer = cam.location
+    time = time
+    r, phi, theta = pixel2horizontal(row, col, cam)
+
+    angle = Angle(angle*u.deg)
+    mask = theta > angle
+    theta_new = theta[mask]
+    phi_new = phi[mask]
+    mag = magnitude[mask]
+    print('maske', len(phi_new))
+    c = SkyCoord(
+        az=phi_new,
+        alt=theta_new,
+        frame='altaz',
+        obstime=time,
+        location=observer
+        )
+    return c, mag
 
 
 def delete_big_blobs(row, col, size):
