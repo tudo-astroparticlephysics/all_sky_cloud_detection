@@ -78,7 +78,6 @@ def limit_zenith_angle_catalog(row, col, cam, angle, time, magnitude):
     theta_new = theta[mask]
     phi_new = phi[mask]
     mag = magnitude[mask]
-    print('maske', len(phi_new))
     c = SkyCoord(
         az=phi_new,
         alt=theta_new,

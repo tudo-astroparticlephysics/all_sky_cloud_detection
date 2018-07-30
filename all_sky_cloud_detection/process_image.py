@@ -45,7 +45,6 @@ def process_image(path, cam, show_plot=False, save_plot=False):
     magnitude = catalog['v_mag']
     image, file_type = read_file(path)
     mean_brightness = mean_pixel_brightness(image, file_type)
-    print('Alle Sterne', len(magnitude))
     image_row, image_col, image_size = find_blobs(path, cam.image.threshold)
     image_row, image_col, image_size, number_big_blobs = delete_big_blobs(image_row, image_col, image_size)
     time = get_time(path, cam, file_type)
