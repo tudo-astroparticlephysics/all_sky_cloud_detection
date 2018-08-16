@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from functools import partial
+import astropy.units as u
 
 from .mapping_functions import mapping_functions, inverse_mapping_functions
 
@@ -25,9 +26,8 @@ class Camera(metaclass=ABCMeta):
 
     max_magnitude = 6
 
-    def __init__(self, location, pointing, rotation):
+    def __init__(self, location, rotation=0 * u.deg):
         self.location = location
-        self.pointing = pointing
         self.rotation = rotation
 
     @property
