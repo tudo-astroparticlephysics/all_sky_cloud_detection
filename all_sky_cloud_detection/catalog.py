@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
 
 
-def read_catalog(max_magnitude=None):
+def read_catalog(max_magnitude=None, max_variability=1):
     """This function reads in star catalogs saved as csv file.
     Parameters
     -----------
@@ -21,8 +21,10 @@ def read_catalog(max_magnitude=None):
     """
     catalog = Table.read(catalog_path)
     if max_magnitude is not None:
-        catalog = catalog[catalog['variability'] == 1]
         catalog = catalog[catalog['v_mag'] <= max_magnitude]
+
+    if max_variability is not None:
+        catalog = catalog[catalog['variability'] == 1]
     return catalog
 
 
