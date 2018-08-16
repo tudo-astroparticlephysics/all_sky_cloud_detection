@@ -39,7 +39,7 @@ class Camera(metaclass=ABCMeta):
     def sensor(self):
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
     def read(path):
         '''
@@ -48,7 +48,8 @@ class Camera(metaclass=ABCMeta):
         '''
         pass
 
-    def theta2r(self, theta):
+    @classmethod
+    def theta2r(cls, theta):
         '''
         Calculates distance from the image center for a given incident angle
 
@@ -63,9 +64,10 @@ class Camera(metaclass=ABCMeta):
             Distance between image center and pixel position
         '''
 
-        return self.lens.mapping_function(theta) / self.sensor.pixel_width
+        return cls.lens.mapping_function(theta) / cls.sensor.pixel_width
 
-    def r2theta(self, r):
+    @classmethod
+    def r2theta(cls, r):
         '''
         Calculates angle to the optical axes for a given distance to the image center
 
@@ -79,7 +81,7 @@ class Camera(metaclass=ABCMeta):
         float
             Angle to the optical axis
         '''
-        return self.lens.inverse_mapping_function(r * self.sensor.pixel_width)
+        return cls.lens.inverse_mapping_function(r * cls.sensor.pixel_width)
 
 
 class Lens:
