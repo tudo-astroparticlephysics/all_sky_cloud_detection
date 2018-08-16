@@ -12,7 +12,6 @@ class Image:
     timestamp: Camera
         Instance of the camera that took the picture
     '''
-    def __init__(self, img, timestamp, camera):
-        self.img = img
+    def __init__(self, data, timestamp):
+        self.data = data
         self.timestamp = timestamp
-        self.camera = camera

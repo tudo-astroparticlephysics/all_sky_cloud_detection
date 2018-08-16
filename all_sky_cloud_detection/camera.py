@@ -23,12 +23,23 @@ class Camera(metaclass=ABCMeta):
         maximum visiual magnitude of stars to take into account
     '''
 
-    __slots__ = ('lens', 'sensor', 'location', 'max_magnitude')
+    max_magnitude = 6
 
-    def __init__(self, location, max_magnitude):
+    def __init__(self, location, pointing, rotation):
         self.location = location
-        self.max_magnitude = max_magnitude
+        self.pointing = pointing
+        self.rotation = rotation
 
+    @property
+    @abstractmethod
+    def lens(self):
+        pass
+
+    @abstractmethod
+    def sensor(self):
+        pass
+
+    @staticmethod
     @abstractmethod
     def read(path):
         '''
