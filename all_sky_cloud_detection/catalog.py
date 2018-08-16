@@ -20,6 +20,8 @@ def read_catalog(max_magnitude=None, max_variability=1):
             star catalog
     """
     catalog = Table.read(catalog_path)
+    mask = np.isfinite(catalog['ra']) & np.isfinite(catalog['dec'])
+    catalog = catalog[mask]
     if max_magnitude is not None:
         catalog = catalog[catalog['v_mag'] <= max_magnitude]
 
