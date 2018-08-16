@@ -21,7 +21,7 @@ class CTA(Camera):
 
     # CTA AllSkyCamera uses a KAI-04022 image sensor
     # see http://www.qsimaging.com/docs/KAI-04022_Datasheet.pdf
-    sensor = Sensor(resolution_col=2048, resolution_row=2048, width=15.15, height=15.15)
+    sensor = Sensor(resolution_col=2048, resolution_row=2048, width=15.35, height=15.35)
 
     @staticmethod
     def read(path):
