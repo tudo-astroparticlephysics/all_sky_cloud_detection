@@ -1,4 +1,8 @@
+def test_read_fits():
+    from all_sky_cloud_detection.cameras import CTA
 
+    cam = CTA('bla', 'blub')
+    img = cam.read('tests/resources/cta_images/starry.fits.gz')
 
 def test_cloudy():
     from all_sky_cloud_detection.process_image import process_image
