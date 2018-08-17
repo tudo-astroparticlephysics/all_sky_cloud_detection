@@ -1,6 +1,5 @@
 from astropy.coordinates import SkyCoord, AltAz, Angle
 import numpy as np
-from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 from astropy.table import Table
 from pkg_resources import resource_filename
 
@@ -99,10 +98,10 @@ def match_catalogs(catalog, image_stars, cam, time, magnitude):
         catalog_matches = 0
     else:
 
-        catalog_row, catalog_col = horizontal2pixel(matches_catalog.alt, matches_catalog.az, cam)
+        catalog_row, catalog_col = cam.horizontal2pixel(matches_catalog)
         catalog_size = np.ones(len(catalog_row))
         catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
-        image_row, image_col = horizontal2pixel(matches_image.alt, matches_image.az, cam)
+        image_row, image_col = cam.horizontal2pixel(matches_image)
         image_size = np.ones(len(image_row))
         image_matches = np.array([image_row[0], image_col[0], image_size])
     return image_matches, catalog_matches, magnitude_matches

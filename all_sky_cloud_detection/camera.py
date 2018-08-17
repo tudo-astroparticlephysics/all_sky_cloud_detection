@@ -94,9 +94,10 @@ class Camera(metaclass=ABCMeta):
         dr = row - self.zenith_row
         dc = col - self.zenith_col
         r = np.sqrt(dr**2 + dc**2)
+
         zenith = self.r2theta(r)
 
-        az = np.arctan2(-dc, dr) * u.rad + self.rotation
+        az = np.arctan2(-dc, -dr) * u.rad + self.rotation
 
         return SkyCoord(
             alt=Angle('90d') - zenith,
