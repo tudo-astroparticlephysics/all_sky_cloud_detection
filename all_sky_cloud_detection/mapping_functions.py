@@ -14,7 +14,7 @@ def stereographic(theta, focal_length):
 
 @u.quantity_input(theta=u.rad, focal_length=u.mm)
 def equidistant(theta, focal_length):
-    return focal_length * theta
+    return focal_length * theta.to(u.rad).value
 
 
 @u.quantity_input(theta=u.rad, focal_length=u.mm)
@@ -39,7 +39,7 @@ def inverse_stereographic(r, focal_length):
 
 @u.quantity_input(r=u.mm, focal_length=u.mm)
 def inverse_equidistant(r, focal_length):
-    return r / focal_length
+    return (r / focal_length) * u.rad
 
 
 @u.quantity_input(r=u.mm, focal_length=u.mm)
