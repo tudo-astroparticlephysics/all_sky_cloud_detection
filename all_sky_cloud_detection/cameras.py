@@ -45,15 +45,20 @@ class CTA(Camera):
             return Image(img / 2**16, timestamp)
 
 
-class IceAct(Camera):
-    lens = Lens(focal_length=1.4 * u.mm, mapping_function='equidistant')
-    sensor = Sensor(640, 480, 4.8 * u.mm, 3.6 * u.mm)
+class DiffractionLimited340(Camera):
+    lens = Lens(focal_length=1.45 * u.mm, mapping_function='equidistant')
+    sensor = Sensor(
+        resolution_row=480,
+        resolution_col=640,
+        width=4.8 * u.mm,
+        height=3.6 * u.mm,
+    )
 
     @staticmethod
     def read(path):
         with fits.open(path) as f:
             img = f[0].data
-            timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
+            timestamp = Time(f[0].header['DATE-OBS'])
             return Image(img / 2**16, timestamp)
 
 
@@ -66,4 +71,16 @@ cta_la_palma = CTA(
     zenith_row=1699 / 2,
     zenith_col=1699 / 2 - 2,
     rotation=2.75 * u.deg,
+)
+
+
+iceact = DiffractionLimited340(
+    location=EarthLocation(
+        lat=-89.99 * u.deg,
+        lon=-63.45 * u.deg,
+        height=2801 * u.m,
+    ),
+    zenith_row=250,
+    zenith_col=326.5,
+    rotation=87 * u.deg,
 )
