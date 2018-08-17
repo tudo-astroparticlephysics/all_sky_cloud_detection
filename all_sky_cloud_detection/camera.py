@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from functools import partial
 import astropy.units as u
+from astropy.coordinates import SkyCoord, Angle
+import numpy as np
 
 from .mapping_functions import mapping_functions, inverse_mapping_functions
 
@@ -18,17 +20,22 @@ class Camera(metaclass=ABCMeta):
         Sensor instance describing the sensor properties
     lens: Lens
         Lens instance describing the optical properties
+    max_magnitude: float
+        Maximum catalog magnitude to consider
     location: astropy.coordinates.EarthLocation
         Location of the all sky camera
-    location: float
+    rotation: astropy.units.Quantity[angle] or astropy.coordinates.Angle
         maximum visiual magnitude of stars to take into account
     '''
 
     max_magnitude = 6
 
-    def __init__(self, location, rotation=0 * u.deg):
+    @u.quantity_input(rotation=u.rad)
+    def __init__(self, location, zenith_row, zenith_col, rotation=0 * u.deg,):
         self.location = location
         self.rotation = rotation
+        self.zenith_row = zenith_row
+        self.zenith_col = zenith_col
 
     @property
     @abstractmethod
@@ -83,6 +90,32 @@ class Camera(metaclass=ABCMeta):
         '''
         return cls.lens.inverse_mapping_function(r * cls.sensor.pixel_width)
 
+    def pixel2horizontal(self, row, col):
+        dr = row - self.zenith_row
+        dc = col - self.zenith_col
+        r = np.sqrt(dr**2 + dc**2)
+        zenith = self.r2theta(r)
+
+        az = np.arctan2(-dc, dr) * u.rad + self.rotation
+
+        return SkyCoord(
+            alt=Angle('90d') - zenith,
+            az=az,
+            frame='altaz',
+            location=self.location,
+        )
+
+    def horizontal2pixel(self, coord):
+        r = self.theta2r(coord.zen)
+
+        drow = -r * np.cos(coord.az - self.rotation)
+        dcol = -r * np.sin(coord.az - self.rotation)
+
+        row = drow + self.zenith_row
+        col = dcol + self.zenith_col
+
+        return row, col
+
 
 class Lens:
     '''
@@ -95,6 +128,7 @@ class Lens:
         Descibes whether camera uses linear or non-linear mapping function.
 
     '''
+    @u.quantity_input(focal_length=u.mm)
     def __init__(self, focal_length, mapping_function):
         self.focal_length = focal_length
         assert mapping_function in mapping_functions, 'Unsupported mapping_function'
@@ -124,6 +158,7 @@ class Sensor:
     height: float
         lenght of the sensor in mm
     '''
+    @u.quantity_input(width=u.mm, height=u.mm)
     def __init__(self, resolution_row, resolution_col, width, height):
         self.resolution_row = resolution_row
         self.resolution_col = resolution_col

@@ -1,6 +1,8 @@
 from scipy.io import loadmat
 from astropy.io import fits
 from astropy.time import Time
+import astropy.units as u
+from astropy.coordinates import EarthLocation
 import dateutil.parser
 import os
 
@@ -17,11 +19,16 @@ class CTA(Camera):
     max_magnitude = 6
 
     # Sigma 4.5mm, f2.8
-    lens = Lens(focal_length=4.5, mapping_function='equisolid_angle')
+    lens = Lens(focal_length=4.44 * u.mm, mapping_function='equisolid_angle')
 
     # CTA AllSkyCamera uses a KAI-04022 image sensor
     # see http://www.qsimaging.com/docs/KAI-04022_Datasheet.pdf
-    sensor = Sensor(resolution_col=2048, resolution_row=2048, width=15.35, height=15.35)
+    sensor = Sensor(
+        resolution_col=2048,
+        resolution_row=2048,
+        width=15.15 * u.mm,
+        height=15.15 * u.mm,
+    )
 
     @staticmethod
     def read(path):
@@ -39,5 +46,24 @@ class CTA(Camera):
 
 
 class IceAct(Camera):
-    lens = Lens(focal_length=5, mapping_function='equidistant')
-    sensor = Sensor(640, 480, 1000, 1000)
+    lens = Lens(focal_length=1.4 * u.mm, mapping_function='equidistant')
+    sensor = Sensor(640, 480, 4.8 * u.mm, 3.6 * u.mm)
+
+    @staticmethod
+    def read(path):
+        with fits.open(path) as f:
+            img = f[0].data
+            timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
+            return Image(img / 2**16, timestamp)
+
+
+cta_la_palma = CTA(
+    location=EarthLocation(
+        lat='28.761870°',
+        lon='-17.890777°',
+        height=2200 * u.m
+    ),
+    zenith_row=1699 / 2,
+    zenith_col=1699 / 2 - 2,
+    rotation=2.75 * u.deg,
+)
