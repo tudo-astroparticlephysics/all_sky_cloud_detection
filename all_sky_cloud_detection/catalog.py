@@ -21,7 +21,7 @@ def read_catalog(max_magnitude=None):
     """
     catalog = Table.read(catalog_path)
     if max_magnitude is not None:
-        catalog = catalog[catalog['variability'] == 1]
+        catalog = catalog[(catalog['variability'] !=2) & (catalog['variability'] !=3)]
         catalog = catalog[catalog['v_mag'] <= max_magnitude]
     return catalog
 

@@ -25,6 +25,6 @@ def calculate_cloudiness(cam, catalog, angle, time, matches_magnitude, magnitude
     limited_catalog_row, limited_catalog_col = horizontal2pixel(limited_catalog.alt, limited_catalog.az, cam)
     visible_stars = np.sum(2.5**(matches_magnitude))
     all_stars = np.sum(2.5**(mag))
-    cloudiness = 1- visible_stars/all_stars
+    cloudiness = np.round(1 - visible_stars / all_stars, 2)
 
     return cloudiness, limited_catalog_row[0], limited_catalog_col[0]
