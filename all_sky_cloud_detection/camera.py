@@ -103,7 +103,7 @@ class Lens:
             mapping_functions[mapping_function],
             focal_length=self.focal_length,
         )
-        self.inverse_mapping_functions = partial(
+        self.inverse_mapping_function = partial(
             inverse_mapping_functions[mapping_function],
             focal_length=self.focal_length,
         )
