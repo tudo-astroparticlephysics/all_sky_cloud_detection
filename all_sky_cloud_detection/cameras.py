@@ -5,9 +5,15 @@ import astropy.units as u
 from astropy.coordinates import EarthLocation
 import dateutil.parser
 import os
+import json
+from pkg_resources import resource_stream
 
 from .camera import Camera, Lens, Sensor
 from .image import Image
+
+magic2018_mapping = json.load(resource_stream(
+    'all_sky_cloud_detection', 'resources/magic_mapping_spline.json'
+))
 
 
 class CTA(Camera):
@@ -19,7 +25,7 @@ class CTA(Camera):
     max_magnitude = 6
 
     # Sigma 4.5mm, f2.8
-    lens = Lens(focal_length=4.44 * u.mm, mapping_function='equisolid_angle')
+    lens = Lens(focal_length=4.44 * u.mm, mapping='equisolid_angle')
 
     # CTA AllSkyCamera uses a KAI-04022 image sensor
     # see http://www.qsimaging.com/docs/KAI-04022_Datasheet.pdf
@@ -37,16 +43,16 @@ class CTA(Camera):
             data = loadmat(path)
             img = data['pic1']
             timestamp = Time(dateutil.parser.parse(data['UTC1']))
-            return Image(img / 2**16, timestamp)
 
         with fits.open(path) as f:
             img = f[0].data
             timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
-            return Image(img / 2**16, timestamp)
+
+        return Image(img / 2**16, timestamp)
 
 
 class DiffractionLimited340(Camera):
-    lens = Lens(focal_length=1.45 * u.mm, mapping_function='equidistant')
+    lens = Lens(focal_length=1.45 * u.mm, mapping='equidistant')
     sensor = Sensor(
         resolution_row=480,
         resolution_col=640,
@@ -62,6 +68,30 @@ class DiffractionLimited340(Camera):
             return Image(img / 2**16, timestamp)
 
 
+class MAGIC2018(Camera):
+    lens = Lens(
+        focal_length=1.55 * u.mm,
+        mapping='spline',
+        tck=magic2018_mapping['tck'],
+        tck_inv=magic2018_mapping['tck_inv'],
+    )
+    # see https://www.sxccd.com/trius-sx9
+    sensor = Sensor(
+        resolution_row=1040,
+        resolution_col=1392,
+        width=6.5 * u.mm,
+        height=4.8 * u.mm,
+    )
+
+    @staticmethod
+    def read(path):
+        with fits.open(path) as f:
+            img = f[0].data
+            h = f[0].header
+            timestamp = Time(h['DATE-OBS'] + 'T' + h['TIME-OBS'])
+            return Image(img / 2**16, timestamp)
+
+
 cta_la_palma = CTA(
     location=EarthLocation(
         lat='28.761870°',
@@ -71,6 +101,17 @@ cta_la_palma = CTA(
     zenith_row=1699 / 2,
     zenith_col=1699 / 2 - 2,
     rotation=2.75 * u.deg,
+)
+
+magic_2018 = MAGIC2018(
+    location=EarthLocation(
+        lat='28.761870°',
+        lon='-17.890777°',
+        height=2200 * u.m
+    ),
+    zenith_row=MAGIC2018.sensor.resolution_row / 2 + 7,
+    zenith_col=MAGIC2018.sensor.resolution_col / 2 + 33,
+    rotation=171 * u.deg,
 )
 
 

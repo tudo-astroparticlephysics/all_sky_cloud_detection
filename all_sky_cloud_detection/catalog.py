@@ -1,12 +1,14 @@
-from astropy.coordinates import SkyCoord, AltAz, Angle
+from astropy.coordinates import SkyCoord, AltAz, get_body
 import numpy as np
 from astropy.table import Table
 from pkg_resources import resource_filename
+from functools import lru_cache
 
 
 catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos.fits.gz')
 
 
+@lru_cache(maxsize=10)
 def read_catalog(max_magnitude=None, max_variability=1):
     """This function reads in star catalogs saved as csv file.
     Parameters
@@ -50,7 +52,21 @@ def select_from_catalog(catalog, mag):
     return result
 
 
-def transform_catalog(ra_catalog, dec_catalog, time, cam):
+def get_planets(time, cam):
+    names = ['venus', 'mars', 'jupiter', 'saturn']
+    altaz = AltAz(obstime=time, location=cam.location)
+    planets = [
+        get_body(b, time).transform_to(altaz)
+        for b in names
+    ]
+    return SkyCoord(
+        alt=[p.alt for p in planets],
+        az=[p.az for p in planets],
+        frame=altaz,
+    )
+
+
+def transform_catalog(catalog, time, cam):
     """This function transforms star coordinates (ra, dec) from a catalog to altaz.
     Parameters
     -----------
@@ -67,41 +83,6 @@ def transform_catalog(ra_catalog, dec_catalog, time, cam):
     pos_altaz: astropy SkyCoord object
                 Star positions in altaz at the given time.
     """
-    pos = SkyCoord(ra=ra_catalog, dec=dec_catalog, frame='icrs', unit='deg')
+    pos = SkyCoord(ra=catalog['ra'], dec=catalog['dec'], frame='icrs')
     pos_altaz = pos.transform_to(AltAz(obstime=time, location=cam.location))
     return pos_altaz
-
-
-def match_catalogs(catalog, image_stars, cam, time, magnitude):
-    """This function compares star positions.
-    Parameters
-    -----------
-    catalog: array
-            Stars from a catalog.
-    c: array
-        Detected stars in an all sky camera image.
-    cam: string
-        name of the used all sky camera
-    Returns
-    -------
-    c: arrray
-        Pixel positions of the matching stars.
-    catalog: array
-        Pixel positions of the matching stars.
-    """
-    idxc, idxcatalog, d2d, d3d = catalog.search_around_sky(image_stars, Angle('0.5d'))
-    matches_catalog = catalog[idxcatalog]
-    magnitude_matches = magnitude[idxcatalog]
-    matches_image = image_stars[idxc]
-    if not matches_image:
-        image_matches = 0
-        catalog_matches = 0
-    else:
-
-        catalog_row, catalog_col = cam.horizontal2pixel(matches_catalog)
-        catalog_size = np.ones(len(catalog_row))
-        catalog_matches = np.array([catalog_row[:, 0], catalog_col[:, 0], catalog_size])
-        image_row, image_col = cam.horizontal2pixel(matches_image)
-        image_size = np.ones(len(image_row))
-        image_matches = np.array([image_row[0], image_col[0], image_size])
-    return image_matches, catalog_matches, magnitude_matches
