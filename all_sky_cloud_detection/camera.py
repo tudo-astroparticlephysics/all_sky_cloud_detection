@@ -39,6 +39,11 @@ class Camera(metaclass=ABCMeta):
 
     @property
     @abstractmethod
+    def threshold(self):
+        pass
+
+    @property
+    @abstractmethod
     def lens(self):
         pass
 

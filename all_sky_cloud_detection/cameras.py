@@ -23,6 +23,7 @@ class CTA(Camera):
     and operated at the MAGIC and Paranal sites
     '''
     max_magnitude = 6
+    threshold = 0.005
 
     # Sigma 4.5mm, f2.8
     lens = Lens(focal_length=4.44 * u.mm, mapping='equisolid_angle')
@@ -52,6 +53,9 @@ class CTA(Camera):
 
 
 class DiffractionLimited340(Camera):
+    max_magnitude = 4
+    threshold = 0.0015
+
     lens = Lens(focal_length=1.45 * u.mm, mapping='equidistant')
     sensor = Sensor(
         resolution_row=480,
@@ -69,6 +73,9 @@ class DiffractionLimited340(Camera):
 
 
 class MAGIC2018(Camera):
+    max_magnitude = 5.5
+    threshold = 0.0025
+
     lens = Lens(
         focal_length=1.55 * u.mm,
         mapping='spline',
