@@ -66,7 +66,7 @@ def get_planets(time, cam):
     )
 
 
-def transform_catalog(catalog, time, cam):
+def transform_catalog(catalog, time, cam, min_altitude=20):
     """This function transforms star coordinates (ra, dec) from a catalog to altaz.
     Parameters
     -----------
@@ -81,8 +81,15 @@ def transform_catalog(catalog, time, cam):
     Returns
     -------
     pos_altaz: astropy SkyCoord object
-                Star positions in altaz at the given time.
+        Star positions in altaz at the given time.
+    magnitude: array
+        Magnitude of the stars
     """
-    pos = SkyCoord(ra=catalog['ra'], dec=catalog['dec'], frame='icrs')
-    pos_altaz = pos.transform_to(AltAz(obstime=time, location=cam.location))
-    return pos_altaz
+    stars = SkyCoord(ra=catalog['ra'], dec=catalog['dec'], frame='icrs')
+    stars_altaz = stars.transform_to(AltAz(obstime=time, location=cam.location))
+
+    visible = stars_altaz.alt.deg > min_altitude
+    stars_altaz = stars_altaz[visible]
+    magnitude = catalog['v_mag'][visible]
+
+    return stars_altaz, magnitude
