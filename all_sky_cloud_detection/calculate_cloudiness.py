@@ -1,6 +1,4 @@
-from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 import numpy as np
-from all_sky_cloud_detection.star_selection import limit_zenith_angle_catalog
 
 
 def calculate_cloudiness_weighted(magnitude, found):
@@ -16,11 +14,11 @@ def calculate_cloudiness_weighted(magnitude, found):
     cloudiness: float
         Cloudiness of the analyzed image
     """
-    visible_stars = np.sum(2.5**(magnitude[found]))
-    all_stars = np.sum(2.5**(mag))
-    cloudiness = 1- visible_stars/all_stars
+    visible_stars = np.sum(2.5**magnitude[found])
+    all_stars = np.sum(2.5**magnitude)
+    cloudiness = 1 - visible_stars / all_stars
 
-    return cloudiness, limited_catalog_row[0], limited_catalog_col[0]
+    return cloudiness
 
 
 def calculate_cloudiness_simple(found):
@@ -30,13 +28,13 @@ def calculate_cloudiness_simple(found):
 
     Parameters
     -----------
-    magnitude: array
-        visual magnitude of the stars
-    Number of stars from the catalog that match the stars in the image
+    found: array
+        Boolean array, true where a catalog star could be found in the image
+
     Returns
     -------
     cloudiness: float
         Cloudiness of the analyzed image
     """
 
-    return np.mean(found)
+    return 1 - np.mean(found)
