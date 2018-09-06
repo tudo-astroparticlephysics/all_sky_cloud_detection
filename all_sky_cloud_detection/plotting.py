@@ -6,6 +6,22 @@ import astropy.units as u
 import numpy as np
 
 
+def plot_img(img):
+
+    fig = plt.figure(figsize=np.array(img.data.shape) / 100, dpi=100)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_axis_off()
+
+    ax.imshow(
+        img.data,
+        cmap='gray',
+        vmin=np.nanpercentile(img.data, 0.1),
+        vmax=np.nanpercentile(img.data, 99),
+    )
+
+    return fig, ax
+
+
 def add_blobs(rows, columns, sizes, color=None, ax=None):
     """The function draws circles around given pixel coordinates
     Parameters
@@ -52,7 +68,6 @@ def add_direction_labels(cam, ax=None, **kwargs):
 def add_zenith_lines(cam, step=10, ax=None, color='crimson', **kwargs):
     ax = ax or plt.gca()
 
-    ax.plot(cam.zenith_col, cam.zenith_row, 'o', color='crimson')
     for zenith in np.arange(step, 91, step) * u.deg:
         c = Circle(
             xy=(cam.zenith_col, cam.zenith_row),
