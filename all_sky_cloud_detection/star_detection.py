@@ -1,6 +1,5 @@
 from skimage.feature import blob_log
 from astropy.coordinates import match_coordinates_sky
-import numpy as np
 import astropy.units as u
 import warnings
 
@@ -8,9 +7,9 @@ import warnings
 def find_stars(
     image,
     threshold,
-    min_sigma=0.85,
-    max_sigma=2,
-    num_sigma=5,
+    min_sigma=1.0,
+    max_sigma=3.0,
+    num_sigma=4,
     log_scale=False,
 ):
     '''
