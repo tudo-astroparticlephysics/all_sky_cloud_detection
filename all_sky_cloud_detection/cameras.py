@@ -23,7 +23,7 @@ class CTA(Camera):
     and operated at the MAGIC and Paranal sites
     '''
     max_magnitude = 6
-    threshold = 0.005
+    threshold = 0.0025
 
     # Sigma 4.5mm, f2.8
     lens = Lens(focal_length=4.44 * u.mm, mapping='equisolid_angle')
