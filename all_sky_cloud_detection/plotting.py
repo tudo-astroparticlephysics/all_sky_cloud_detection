@@ -6,20 +6,20 @@ import astropy.units as u
 import numpy as np
 
 
-def plot_img(img):
+def plot_img(img, vmin=None, vmax=None):
 
     fig = plt.figure(figsize=np.array(img.data.shape) / 100, dpi=100)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_axis_off()
 
-    ax.imshow(
+    plot = ax.imshow(
         img.data,
         cmap='gray',
-        vmin=np.nanpercentile(img.data, 0.1),
-        vmax=np.nanpercentile(img.data, 99),
+        vmin=vmin or np.nanpercentile(img.data, 0.1),
+        vmax=vmax or np.nanpercentile(img.data, 99),
     )
 
-    return fig, ax
+    return fig, ax, plot
 
 
 def add_blobs(rows, columns, sizes, color=None, ax=None):
@@ -36,8 +36,7 @@ def add_blobs(rows, columns, sizes, color=None, ax=None):
     -------
     star_circles:
     """
-    if ax is None:
-        ax = plt.gca()
+    ax = ax or plt.gca()
 
     star_circles = PatchCollection([
         Circle((col, row), radius=3 * sigma)
