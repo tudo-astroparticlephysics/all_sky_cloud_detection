@@ -1,7 +1,7 @@
 # coding: utf-8
 from all_sky_cloud_detection.cameras import cta_la_palma
 from all_sky_cloud_detection.catalog import read_catalog
-from astropy.coordinates import SkyCoord, EarthLocation, AltAz
+from astropy.coordinates import SkyCoord, AltAz
 import astropy.units as u
 import matplotlib.pyplot as plt
 
@@ -10,7 +10,6 @@ c = read_catalog(
     max_variability=None,
 )
 
-location = EarthLocation.of_site('Roque de los Muchachos')
 img = cta_la_palma.read('tests/resources/cta_images/starry.fits.gz')
 
 big_dipper = [54061, 53910, 58001, 59774, 62956, 65378, 67301]
@@ -18,7 +17,7 @@ dipper_mask = [row['HIP'] in big_dipper for row in c]
 
 
 stars = SkyCoord(ra=c['ra'], dec=c['dec'])
-altaz = AltAz(obstime=img.timestamp, location=location)
+altaz = AltAz(obstime=img.timestamp, location=cta_la_palma.location)
 stars_altaz = stars.transform_to(altaz)
 mask = (stars_altaz.alt.deg > 15) & (c['v_mag'] <= 5)
 
