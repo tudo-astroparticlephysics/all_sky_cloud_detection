@@ -1,4 +1,9 @@
+def test_read_fits():
+    from all_sky_cloud_detection.cameras import CTA
 
+    img = CTA.read('tests/resources/cta_images/starry.fits.gz')
+
+    assert img.data.shape == (1699, 1699)
 
 def test_cloudy():
     from all_sky_cloud_detection.process_image import process_image
