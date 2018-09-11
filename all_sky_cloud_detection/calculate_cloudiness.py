@@ -35,4 +35,4 @@ def calculate_cloudiness_simple(found):
         Cloudiness of the analyzed image
     """
 
-return 1 - np.mean(found)
+    return 1 - np.mean(found)
