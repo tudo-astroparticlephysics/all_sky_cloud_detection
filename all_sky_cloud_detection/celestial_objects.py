@@ -3,18 +3,20 @@ from all_sky_cloud_detection.coordinate_transformation import horizontal2pixel
 import numpy as np
 from astropy.coordinates import get_body
 
+
 def moon_coordinates(time, cam):
-    """This function searches for the moon position at a given time
+    """This function searches for the moon position at a given time.
+
     Parameters
     -----------
-    time: astropy SkyCoord time object
-            Time from the fits header of the image
-    cam: camclass object
-        Camera name
+    time: 'astropy.time.core.Time'
+        Time the image was taken.
+    cam: 'str'
+        Camera
     Returns
     -------
-    moon_altitude: float
-        Sinus of the moon altitude in rad
+    moon_altitude:  'float'
+        Altitude of the moon at the time the image was taken [radians]
     """
     observer = cam.location
     object = 'moon'
@@ -25,9 +27,37 @@ def moon_coordinates(time, cam):
     dec = coordinates.dec
     moon_position = SkyCoord(ra=ra, dec=dec, frame='icrs', unit='deg')
     moon_position_altaz = moon_position.transform_to(AltAz(obstime=time, location=observer))
-    moon_altitude = np.sin(moon_position_altaz.alt.radian)
-
+    moon_altitude = moon_position_altaz.alt.radian
+    print('time', type(time))
     return moon_altitude
+
+
+def sun_coordinates(time, cam):
+    """This function searches for the sun position at a given time.
+
+    Parameters
+    -----------
+    time: 'astropy.time.core.Time'
+        Time the image was taken.
+    cam: 'str'
+        Camera
+    Returns
+    -------
+    sun_altitude:  'float'
+        Altitude of the sun at the time the image was taken [radians]
+    """
+    observer = cam.location
+    object = 'sun'
+    with solar_system_ephemeris.set('builtin'):
+        coordinates = get_body(object, time, observer)
+
+    ra = coordinates.ra
+    dec = coordinates.dec
+    sun_position = SkyCoord(ra=ra, dec=dec, frame='icrs', unit='deg')
+    sun_position_altaz = sun_position.transform_to(AltAz(obstime=time, location=observer))
+    sun_altitude = sun_position_altaz.alt.radian
+
+    return sun_altitude
 
 
 def celestial_objects(time, cam):

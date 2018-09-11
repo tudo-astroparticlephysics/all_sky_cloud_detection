@@ -25,12 +25,10 @@ def calculate_cloudiness_simple(found):
     """
     This function calculates the cloudiness of an image.
     Cloudiness is simply the percentage of found stars
-
     Parameters
     -----------
     found: array
         Boolean array, true where a catalog star could be found in the image
-
     Returns
     -------
     cloudiness: float

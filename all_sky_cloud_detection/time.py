@@ -5,15 +5,20 @@ from all_sky_cloud_detection.camera_classes import cta
 
 
 def get_time(image, cam, file_type):
-    """This function gives the timestamp embedded in the fits header
+    """Get the timestamp of the analyzed image.
+
     Parameters
     -----------
-    image: path
-            path of the image
+    path: 'str'
+        Path to the image to be analyzed
+    cam: 'str'
+        Camera
+    file_type: 'str'
+        File format of the analyzed image
     Returns
     -------
-    time: astropy timestamp
-            timestamp of the given image
+    time: astropy.time.core.Time'
+        Timestamp of the given image
     """
     timestamps = cam.image.timestamp
     if file_type == '.fits' or file_type == '.gz':
@@ -22,7 +27,6 @@ def get_time(image, cam, file_type):
             try:
                 timestamp = image[0].header[timestamp]
                 time = Time(timestamp, scale='utc')
-            #    print('Wrong timestamp')
             except KeyError:
                 continue
 
