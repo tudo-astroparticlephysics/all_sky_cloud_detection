@@ -6,15 +6,15 @@ from astropy.coordinates import EarthLocation
 import dateutil.parser
 import os
 import json
-from pkg_resources import resource_stream
+from pkg_resources import resource_string
 import numpy as np
 
 from .camera import Camera, Lens, Sensor
 from .image import Image
 
-magic2018_mapping = json.load(resource_stream(
+magic2018_mapping = json.loads(resource_string(
     'all_sky_cloud_detection', 'resources/magic_mapping_spline.json'
-))
+).decode('utf-8'))
 
 
 class CTA(Camera):
