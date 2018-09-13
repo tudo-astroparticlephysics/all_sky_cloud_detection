@@ -7,6 +7,7 @@ import dateutil.parser
 import os
 import json
 from pkg_resources import resource_stream
+import numpy as np
 
 from .camera import Camera, Lens, Sensor
 from .image import Image
@@ -48,6 +49,9 @@ class CTA(Camera):
         with fits.open(path) as f:
             img = f[0].data
             timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
+
+        img[np.isnan(img)] = 0.0
+        img[img < 0.0] = 0.0
 
         return Image(img / 2**16, timestamp)
 
