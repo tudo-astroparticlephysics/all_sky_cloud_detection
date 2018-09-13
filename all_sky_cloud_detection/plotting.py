@@ -8,7 +8,7 @@ import numpy as np
 
 def plot_img(img, vmin=None, vmax=None):
 
-    fig = plt.figure(figsize=np.array(img.data.shape) / 100, dpi=100)
+    fig = plt.figure(figsize=np.array(img.data.shape)[::-1] / 100, dpi=100)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_axis_off()
 
