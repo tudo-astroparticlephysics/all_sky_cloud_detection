@@ -3,7 +3,6 @@ from argparse import ArgumentParser
 import numpy as np
 from skimage.exposure import adjust_gamma, rescale_intensity
 import astropy.units as u
-from skimage.filters import gaussian
 
 from all_sky_cloud_detection.cameras import cta_la_palma as cam
 from all_sky_cloud_detection.plotting import (
@@ -54,11 +53,9 @@ def main():
         found_altaz = cam.pixel2horizontal(r, c, img.timestamp)
         # only use blobs with alt > min_altitude
         mask = found_altaz.alt.deg > args.min_altitude
-
-        if len(r) > 0:
-            idx, found = find_matching_stars(stars_catalog, found_altaz[mask], max_sep=0.25*u.deg)
-        else:
-            found = np.zeros(len(stars_catalog), dtype=bool)
+        idx, found = find_matching_stars(
+            stars_catalog, found_altaz[mask], max_sep=0.25 * u.deg
+        )
 
         print('Simple:  ', calculate_cloudiness_simple(found))
         print('Weighted:', calculate_cloudiness_weighted(magnitude, found))

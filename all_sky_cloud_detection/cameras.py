@@ -6,14 +6,15 @@ from astropy.coordinates import EarthLocation
 import dateutil.parser
 import os
 import json
-from pkg_resources import resource_stream
+from pkg_resources import resource_string
+import numpy as np
 
 from .camera import Camera, Lens, Sensor
 from .image import Image
 
-magic2018_mapping = json.load(resource_stream(
+magic2018_mapping = json.loads(resource_string(
     'all_sky_cloud_detection', 'resources/magic_mapping_spline.json'
-))
+).decode('utf-8'))
 
 
 class CTA(Camera):
@@ -48,6 +49,9 @@ class CTA(Camera):
         with fits.open(path) as f:
             img = f[0].data
             timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
+
+        img[np.isnan(img)] = 0.0
+        img[img < 0.0] = 0.0
 
         return Image(img / 2**16, timestamp)
 

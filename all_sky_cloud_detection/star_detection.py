@@ -2,6 +2,7 @@ from skimage.feature import blob_log
 from astropy.coordinates import match_coordinates_sky
 import astropy.units as u
 import warnings
+import numpy as np
 
 
 def find_stars(
@@ -65,6 +66,9 @@ def find_matching_stars(catalog_stars, image_stars, max_sep=0.5 * u.deg):
     mask: array[bool]
         True where a star could be matched to a blob
     """
+    if len(image_stars) == 0:
+        return np.array([], dtype=int), np.zeros(len(catalog_stars), dtype=bool)
+
     idx, d2d, d3d = match_coordinates_sky(catalog_stars, image_stars)
     mask = d2d < max_sep
 
