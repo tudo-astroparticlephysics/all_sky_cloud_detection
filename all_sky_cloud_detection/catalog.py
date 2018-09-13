@@ -9,7 +9,7 @@ catalog_path = resource_filename('all_sky_cloud_detection', 'resources/hipparcos
 
 
 @lru_cache(maxsize=10)
-def read_catalog(max_magnitude=None, max_variability=1):
+def read_catalog(max_magnitude=None, max_variability=None):
     """This function reads in star catalogs saved as csv file.
     Parameters
     -----------
@@ -23,11 +23,13 @@ def read_catalog(max_magnitude=None, max_variability=1):
     catalog = Table.read(catalog_path)
     mask = np.isfinite(catalog['ra']) & np.isfinite(catalog['dec'])
     catalog = catalog[mask]
+
     if max_magnitude is not None:
         catalog = catalog[catalog['v_mag'] <= max_magnitude]
 
     if max_variability is not None:
-        catalog = catalog[catalog['variability'] == 1]
+        catalog = catalog[catalog['variability'] == max_variability]
+
     return catalog
 
 
