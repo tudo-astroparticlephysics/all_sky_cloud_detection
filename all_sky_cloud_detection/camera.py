@@ -3,6 +3,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord, Angle
 import numpy as np
 from scipy.interpolate import splev
+from skimage.transform import rotate
 
 from .mapping_functions import mapping_functions, inverse_mapping_functions
 
@@ -26,16 +27,26 @@ class Camera(metaclass=ABCMeta):
         Location of the all sky camera
     rotation: astropy.units.Quantity[angle] or astropy.coordinates.Angle
         maximum visiual magnitude of stars to take into account
+    rotate_image: bool
+        If True, rotate the image instead of the coordinate system
     '''
 
     max_magnitude = 6
 
     @u.quantity_input(rotation=u.rad)
-    def __init__(self, location, zenith_row, zenith_col, rotation=0 * u.deg,):
+    def __init__(self, location, zenith_row, zenith_col, rotation=0 * u.deg, rotate_image=False):
         self.location = location
         self.rotation = rotation
+        self.rotate_image = rotate_image
         self.zenith_row = zenith_row
         self.zenith_col = zenith_col
+
+    def rotate(self, img):
+        return rotate(
+            img,
+            angle=self.rotation.to(u.deg).value,
+            center=(self.zenith_col, self.zenith_row)
+        )
 
     @property
     @abstractmethod
@@ -111,7 +122,9 @@ class Camera(metaclass=ABCMeta):
         r, phi = self.pixel2polar(row, col)
 
         zenith = self.r2theta(r)
-        az = phi + self.rotation
+        az = phi
+        if not self.rotate_image:
+            az += self.rotation
 
         return SkyCoord(
             alt=Angle('90d') - zenith,
@@ -123,7 +136,9 @@ class Camera(metaclass=ABCMeta):
 
     def horizontal2pixel(self, coord):
         r = self.theta2r(coord.zen)
-        phi = coord.az - self.rotation
+        phi = coord.az
+        if not self.rotate_image:
+            phi -= self.rotation
 
         return self.polar2pixel(r, phi)
 
