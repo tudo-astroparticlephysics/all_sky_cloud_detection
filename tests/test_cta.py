@@ -3,9 +3,9 @@ import astropy.units as u
 
 
 def test_read_fits():
-    from all_sky_cloud_detection.cameras import CTA
+    from all_sky_cloud_detection.cameras import cta_la_palma
 
-    img = CTA.read('tests/resources/cta_images/starry.fits.gz')
+    img = cta_la_palma.read('tests/resources/cta_images/starry.fits.gz')
 
     assert img.data.shape == (1699, 1699)
     assert np.all(img.data >= 0)

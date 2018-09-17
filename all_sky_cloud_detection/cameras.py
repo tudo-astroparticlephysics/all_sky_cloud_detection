@@ -38,8 +38,7 @@ class CTA(Camera):
         height=15.15 * u.mm,
     )
 
-    @staticmethod
-    def read(path):
+    def read(self, path):
         name, ext = os.path.splitext(path)
         if ext == '.mat':
             data = loadmat(path)
@@ -52,8 +51,12 @@ class CTA(Camera):
 
         img[np.isnan(img)] = 0.0
         img[img < 0.0] = 0.0
+        img /= 2**16
 
-        return Image(img / 2**16, timestamp)
+        if self.rotate_image:
+            img = self.rotate(img)
+
+        return Image(img, timestamp)
 
 
 class DiffractionLimited340(Camera):
@@ -68,12 +71,16 @@ class DiffractionLimited340(Camera):
         height=3.6 * u.mm,
     )
 
-    @staticmethod
-    def read(path):
+    def read(self, path):
         with fits.open(path) as f:
-            img = f[0].data
+            img = f[0].data.astype(float)
+            img /= 2**16
             timestamp = Time(f[0].header['DATE-OBS'])
-            return Image(img / 2**16, timestamp)
+
+        if self.rotate_image:
+            img = self.rotate(img)
+
+        return Image(img, timestamp)
 
 
 class MAGIC2018(Camera):
@@ -94,13 +101,17 @@ class MAGIC2018(Camera):
         height=4.8 * u.mm,
     )
 
-    @staticmethod
-    def read(path):
+    def read(self, path):
         with fits.open(path) as f:
             img = f[0].data
+            img /= 2**16
             h = f[0].header
             timestamp = Time(h['DATE-OBS'] + 'T' + h['TIME-OBS'])
-            return Image(img / 2**16, timestamp)
+
+        if self.rotate_image:
+            img = self.rotate(img)
+
+        return Image(img, timestamp)
 
 
 cta_la_palma = CTA(
@@ -123,6 +134,7 @@ magic_2018 = MAGIC2018(
     zenith_row=MAGIC2018.sensor.resolution_row / 2 + 7,
     zenith_col=MAGIC2018.sensor.resolution_col / 2 + 33,
     rotation=171 * u.deg,
+    rotate_image=True,
 )
 
 
