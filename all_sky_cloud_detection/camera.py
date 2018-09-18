@@ -42,11 +42,16 @@ class Camera(metaclass=ABCMeta):
         self.zenith_col = zenith_col
 
     def rotate(self, img):
-        return rotate(
+        img = rotate(
             img,
             angle=self.rotation.to(u.deg).value,
             center=(self.zenith_col, self.zenith_row)
         )
+        r, c = np.arange(img.shape[0]), np.arange(img.shape[1])
+        r, c = np.meshgrid(r, c)
+        m = self.pixel2horizontal(r.T, c.T).alt.deg < 0
+        img[m] = np.nanmin(img[~m])
+        return img
 
     @property
     @abstractmethod
@@ -126,8 +131,12 @@ class Camera(metaclass=ABCMeta):
         if not self.rotate_image:
             az += self.rotation
 
+        alt = Angle('90d') - zenith
+        alt[alt.deg < -90] = Angle('-90d')
+        alt[alt.deg > 90] = Angle('90d')
+
         return SkyCoord(
-            alt=Angle('90d') - zenith,
+            alt=alt,
             az=az,
             frame='altaz',
             location=self.location,
