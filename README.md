@@ -9,7 +9,7 @@ Matching positions between detected stars in the image and catalog stars suggest
 
 The package can be downloaded and installed with following commands:
 
-```python
+```
 $ git clone git@github.com:tudo-astroparticlephysics/all_sky_cloud_detection.git
 $ cd all_sky_cloud_detection/
 $ pip install .
