@@ -22,10 +22,10 @@ parser.add_argument('--max-magnitude', default=cam.max_magnitude, type=float)
 
 
 images = [
-    'tests/resources/cta_images/starry_nomoon.fits.gz',
-    'tests/resources/cta_images/starry.fits.gz',
-    'tests/resources/cta_images/partly_cloudy.fits.gz',
-    'tests/resources/cta_images/cloudy.fits.gz',
+    '../tests/resources/cta_images/starry_nomoon.fits.gz',
+    '../tests/resources/cta_images/starry.fits.gz',
+    '../tests/resources/cta_images/partly_cloudy.fits.gz',
+    '../tests/resources/cta_images/cloudy.fits.gz',
 ]
 
 
