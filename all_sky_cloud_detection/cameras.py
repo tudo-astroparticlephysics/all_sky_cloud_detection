@@ -12,9 +12,9 @@ import numpy as np
 from .camera import Camera, Lens, Sensor
 from .image import Image
 
-magic2018_mapping = json.loads(resource_string(
-    'all_sky_cloud_detection', 'resources/magic_mapping_spline.json'
-).decode('utf-8'))
+#magic2018_mapping = json.loads(resource_string(
+#    'all_sky_cloud_detection', 'resources/magic_mapping_spline.json'
+#).decode('utf-8'))
 
 
 class CTA(Camera):
@@ -40,15 +40,21 @@ class CTA(Camera):
 
     def read(self, path):
         name, ext = os.path.splitext(path)
+        print(path)
+        print(name)
+        print(ext)
         if ext == '.mat':
+            print('hi')
             data = loadmat(path)
             img = data['pic1']
-            timestamp = Time(dateutil.parser.parse(data['UTC1']))
+            timestamp = Time(dateutil.parser.parse(data['UTC1'][0]))
 
-        with fits.open(path) as f:
-            img = f[0].data
-            timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
-
+        if ext == 'fits.gz' or ext == '.gz':
+            with fits.open(path) as f:
+                img = f[0].data
+                timestamp = Time(dateutil.parser.parse(f[0].header['TIMEUTC']))
+        #else:
+        #    raise TypeError
         img[np.isnan(img)] = 0.0
         img[img < 0.0] = 0.0
         img /= 2**16
@@ -61,7 +67,7 @@ class CTA(Camera):
 
 class DiffractionLimited340(Camera):
     max_magnitude = 4
-    threshold = 0.0015
+    threshold = 0.00015
 
     lens = Lens(focal_length=1.45 * u.mm, mapping='equidistant')
     sensor = Sensor(
@@ -83,36 +89,36 @@ class DiffractionLimited340(Camera):
         return Image(img, timestamp)
 
 
-class MAGIC2018(Camera):
-    max_magnitude = 5.5
-    threshold = 0.0025
+#class MAGIC2018(Camera):
+#    max_magnitude = 5.5
+#    threshold = 0.0025
 
-    lens = Lens(
-        focal_length=1.55 * u.mm,
-        mapping='spline',
-        tck=magic2018_mapping['tck'],
-        tck_inv=magic2018_mapping['tck_inv'],
-    )
+#    lens = Lens(
+#        focal_length=1.55 * u.mm,
+#        mapping='spline',
+#        tck=magic2018_mapping['tck'],
+#        tck_inv=magic2018_mapping['tck_inv'],
+    #)
     # see https://www.sxccd.com/trius-sx9
-    sensor = Sensor(
-        resolution_row=1040,
-        resolution_col=1392,
-        width=6.5 * u.mm,
-        height=4.8 * u.mm,
-    )
+#    sensor = Sensor(
+#        resolution_row=1040,
+#        resolution_col=1392,
+#        width=6.5 * u.mm,
+#        height=4.8 * u.mm,
+#    )
 
-    def read(self, path):
-        with fits.open(path) as f:
-            img = f[0].data
-            img /= 2**16
-            h = f[0].header
-            timestamp = Time(h['DATE-OBS'] + 'T' + h['TIME-OBS'])
+#    def read(self, path):
+#        with fits.open(path) as f:
+#            img = f[0].data
+#            img /= 2**16
+#            h = f[0].header
+#            timestamp = Time(h['DATE-OBS'] + 'T' + h['TIME-OBS'])
 
-        if self.rotate_image:
-            img = self.rotate(img)
+#        if self.rotate_image:
+#            img = self.rotate(img)
 
-        return Image(img, timestamp)
-
+#        return Image(img, timestamp)
+#
 
 cta_la_palma = CTA(
     location=EarthLocation(
@@ -125,17 +131,17 @@ cta_la_palma = CTA(
     rotation=2.75 * u.deg,
 )
 
-magic_2018 = MAGIC2018(
-    location=EarthLocation(
-        lat='28.761870°',
-        lon='-17.890777°',
-        height=2200 * u.m
-    ),
-    zenith_row=MAGIC2018.sensor.resolution_row / 2 + 7,
-    zenith_col=MAGIC2018.sensor.resolution_col / 2 + 33,
-    rotation=171 * u.deg,
-    rotate_image=True,
-)
+#magic_2018 = MAGIC2018(
+#    location=EarthLocation(
+#        lat='28.761870°',
+#        lon='-17.890777°',
+#        height=2200 * u.m
+#    ),
+#    zenith_row=MAGIC2018.sensor.resolution_row / 2 + 7,
+#    zenith_col=MAGIC2018.sensor.resolution_col / 2 + 33,
+#    rotation=171 * u.deg,
+#    rotate_image=True,
+#)#
 
 
 iceact = DiffractionLimited340(
@@ -147,4 +153,18 @@ iceact = DiffractionLimited340(
     zenith_row=250,
     zenith_col=326.5,
     rotation=87 * u.deg,
+
+)
+
+#use for images taken in 2018
+iceact_18 = DiffractionLimited340(
+    location=EarthLocation(
+        lat=-89.99 * u.deg,
+        lon=-63.45 * u.deg,
+        height=2801 * u.m,
+    ),
+    zenith_row=245,
+    zenith_col=311,
+    rotation=176 * u.deg,
+
 )
