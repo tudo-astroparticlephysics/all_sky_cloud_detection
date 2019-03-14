@@ -1,30 +1,31 @@
 # all_sky_cloud_detection [![Build Status](https://travis-ci.org/tudo-astroparticlephysics/all_sky_cloud_detection.svg?branch=master)](https://travis-ci.org/tudo-astroparticlephysics/all_sky_cloud_detection)
 
 
-Night Sky Cloud Coverage in All Sky Camera Images
----------------
+# Night Sky Cloud Coverage in All Sky Camera Images
+
 A python package for the evaluation of the cloud coverage in all sky camera images.
 The images are searched for stars as bright blobs and compared to a star catalog. 
 Matching positions between detected stars in the image and catalog stars suggests a starry night sky, while catalog stars without matches in the image implay an overcast sky.
 
 The package can be downloaded and installed with following commands:
-
 ```
 $ git clone git@github.com:tudo-astroparticlephysics/all_sky_cloud_detection.git
 $ cd all_sky_cloud_detection/
 $ pip install .
 ```
-
-##
+## Cloudiness of an image
 
 Currently, `cameras` provides information of  all sky cameras located on La Palma and at the South Pole.
-A test image from La Palma is given stored at
+Code for the analysis of test images can be found in the examples. 
+The analysis of a single image is carried out as follows:
+
+A test image from La Palma is stored at
 
 ```python
 
 images = '../tests/resources/cta_images/starry_nomoon.fits.gz'
 ```
-All sky camera images are read in with a camera dependent function `cam.read`, supporting the image file format.
+All sky camera images are read in with a camera dependent function `cam.read`, supporting the certain image file format.
 
 ```python
 import numpy as np
@@ -74,7 +75,7 @@ print('Weighted:', calculate_cloudiness_weighted(magnitude, found))
 
 ```
 
-Plot everything
+Plot everything:
 
 ```python
 from all_sky_cloud_detection.plotting import (
